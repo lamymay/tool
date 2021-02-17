@@ -1,0 +1,23 @@
+server:
+  port: 80
+
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    encoding: UTF-8
+  #  resources:
+#    add-mappings: false
+#    static-locations: classpath:/static/,classpath:/templates/index/
+  application:
+    name: tool-server
+  profiles:
+    active: local
+
+
+#配置日志,日志用xml去配置
+log:
+  dir: ./log
+

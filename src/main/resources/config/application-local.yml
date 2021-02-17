@@ -1,0 +1,10 @@
+########################################################
+#          不同环境         Environment for Localhost
+########################################################
+
+#spring:
+#  servlet:
+#    multipart:
+#      max-file-size: 10200MB
+#      max-request-size: 102400MB
+#  profiles: local
