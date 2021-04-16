@@ -13,7 +13,6 @@ import java.util.Map;
 public interface FreemarkerGeneratorService {
 
     /**
-     *
      * @param propertiesProvider
      * @return
      */
@@ -22,9 +21,13 @@ public interface FreemarkerGeneratorService {
     /**
      * 真正执行数据与模板合成的方法
      *
-     * @param parameterMap
-     * @return
+     * @param parameterMap parameterMap
+     * @return Map
      */
     Map<String, Object> executeByMap(Map<String, Object> parameterMap);
+
+
+    //todo 返回值需要做优化
+//    Map<String, Object> executeByMap(Map<String, Object> parameterMap);
 
 }

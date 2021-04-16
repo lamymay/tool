@@ -24,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/v1/process")
-public class GenerateCodeController {
+public class GenerateCodeV1Controller {
 
     @Autowired
     private FreemarkerGeneratorService freemarkerGeneratorService;
@@ -40,9 +40,9 @@ public class GenerateCodeController {
      * 文件下载3-- 遍历一个文件夹
      * POST http://127.0.0.1:8001/zero/test/zip/download/v3   wait response zip data
      *
-     * @param parameterMap
-     * @param response
-     * @return
+     * @param parameterMap Map
+     * @param response     HttpServletResponse
+     * @return ResponseEntity
      */
     @RequestMapping("/download/v3")
     public ResponseEntity testV3(@RequestBody Map<String, Object> parameterMap, HttpServletResponse response) {
@@ -71,8 +71,7 @@ public class GenerateCodeController {
      * -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
      * at RequestParam Map<String, Object> parameterMap
      *
-     * @param parameterMap
-     * @return
+     * @param parameterMap Map
      */
     @PostMapping(value = "/form")
     public void testMap2ByForm(@RequestParam Map<String, Object> parameterMap, HttpServletResponse response) {
@@ -108,7 +107,7 @@ public class GenerateCodeController {
     /**
      * 测试生成逻辑
      *
-     * @return map
+     * @return ResponseEntity
      */
     @GetMapping(value = "/test/fixed")
     public ResponseEntity fixed() {

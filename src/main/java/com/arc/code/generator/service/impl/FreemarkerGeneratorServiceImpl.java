@@ -70,7 +70,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     private Configuration configuration;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         //准备输出目录
         log.info("afterPropertiesSet方法执行时刻={}", System.currentTimeMillis());
         //        dataModel = new HashMap<>(40);
@@ -122,8 +122,6 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         //1、参数校验与准备--参数校验2-- 补充一些必要参数
         Assert.notNull(parameterMap, "配置参数不能为空");
         //文件输出路径
-
-
         String output = (String) parameterMap.get("output");
         if (!output.endsWith(File.separator)) {
             output = output + File.separator;
@@ -205,8 +203,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
      * 参数校验1
      * 简单把从系统配置文件中收集的配置参数转换为map
      *
-     * @param propertiesProvider
-     * @return
+     * @param propertiesProvider ArcPropertiesProvider
+     * @return Map
      */
     private Map<String, Object> verifyAndPrepareParameter(ArcPropertiesProvider propertiesProvider) {
         Map<String, Object> parameterMap = new HashMap<>();
@@ -246,8 +244,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     /**
      * 获取表的元数据
      *
-     * @param useCustomizeDataSourceByControllerReceived
-     * @return
+     * @param useCustomizeDataSourceByControllerReceived Map
+     * @return TableMeta
      */
     private TableMeta selectTableMate(Map<String, Object> useCustomizeDataSourceByControllerReceived) {
         Object useCustomizeDataSource = useCustomizeDataSourceByControllerReceived.get("useCustomizeDataSourceByControllerReceived");
@@ -441,6 +439,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         log.debug("generatorPropertiesProvider.getDatabase().getTableName() 结果={}", arcPropertiesProvider.getDatabaseProperties().getTableName());
         log.debug("mapper 结果={}", mapper);
         log.debug("TableMeta 结果={}", meta);
+
+        FileOutputStream fos = null;
         try {
             File file = new File("T:\\Project\\Za\\tool\\src\\main\\resources\\templates\\serializable\\SerializableTableMeta.txt");
             //创建父级目录
@@ -478,13 +478,22 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
                     throw new RuntimeException("临时文件创建失败");
                 }
             }
-            FileOutputStream fos = new FileOutputStream(file);
+            fos = new FileOutputStream(file);
             ObjectOutputStream objectOutputStream = null;
             objectOutputStream = new ObjectOutputStream(fos);
             objectOutputStream.writeObject(meta);
             objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
         }
         if (meta == null) {
             throw new IllegalArgumentException("\n指定的表不存在，请检查表的名称或数据库是否配置正确！\nPlease check schemaName and tableName are correct. ");
@@ -519,7 +528,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
      * @throws IOException
      * @throws TemplateException
      */
-    public Object process(Map<String, Object> parameterMap, String templateName, String outputFileFullName) throws IOException, TemplateException {
+    public Object process(Map<String, Object> parameterMap, String templateName, String outputFileFullName) {
         if (parameterMap == null) {
             parameterMap = new HashMap<>(1);
             parameterMap.put("result", false);
@@ -527,7 +536,13 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         //todo 数据与模板合成 并输出
         log.debug("参数 parameterMap ={}", JacksonUtils.toJson(parameterMap));
         log.debug("Freemarker configuration ={},templateName={},outputFileFullName={}", configuration, templateName, outputFileFullName);
-        Template template = configuration.getTemplate(templateName);
+        Template template = null;
+        try {
+            template = configuration.getTemplate(templateName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("异常when getTemplate", e);
+        }
 
         File outputFile = new File(outputFileFullName);
         if (!outputFile.exists()) {
@@ -540,18 +555,40 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
                     throw new RuntimeException(msg);
                 }
             }
-            boolean result = outputFile.createNewFile();
+            boolean result = false;
+            try {
+                result = outputFile.createNewFile();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                log.error("创建文件异常 createNewFile ", exception);
+            }
             log.info("############################################");
             log.info("文件路径={}", outputFile.getPath());
             log.info("############################################");
             log.info("javaFile.createNewFile()={}", result);
         }
 
-        FileWriter writer = new FileWriter(outputFile);
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(outputFile);
+
+
 //        Environment processingEnvironment = template.createProcessingEnvironment(parameterMap, writer, null);
-        template.process(parameterMap, writer);
-        writer.flush();
-        writer.close();
+            template.process(parameterMap, writer);
+            writer.flush();
+
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        } catch (TemplateException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+
+        }
         return parameterMap;
 //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
     }

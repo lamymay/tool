@@ -1,5 +1,6 @@
 package com.arc.code.generator.utils;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,13 +25,16 @@ public class ZipFileUtil {
     /**
      * 返回指定目录下的全部文件
      *
-     * @param rootFileFolder
-     * @return
+     * @param rootFileFolder 指定目录
+     * @return 返回指定目录下的全部文件
      */
     public static List<File> listNextFile(String rootFileFolder) {
         File folder = new File(rootFileFolder);
         File[] listOfFiles = folder.listFiles();
         List<File> fileList = null;
+        if (listOfFiles == null || listOfFiles.length < 1) {
+            return fileList;
+        }
         if (listOfFiles != null && listOfFiles.length > 0) {
             fileList = new LinkedList<>();
         }
@@ -76,12 +80,8 @@ public class ZipFileUtil {
      * @param output
      * @throws IOException
      */
-    //     todo 生成的文件放入临时文件夹，改造使用临时文件 RandomAccessFile
     public static void downloadFilesZip(HttpServletResponse response, @NotNull String output) {
-
-        // 需要 关闭的流
-        //FileOutputStream
-        //FileOutputStream
+        // 注意:需要关闭的流 有哪些?
         response.setCharacterEncoding("UTF-8");
         //获得要下载的文件名
         String fileRootPath = output;
@@ -100,9 +100,10 @@ public class ZipFileUtil {
         ZipOutputStream zipOutput = null;
         FileInputStream in = null;
         OutputStream out = null;
-        FileInputStream fileInputStream = null;
+        FileInputStream fileInputStream;
         BufferedOutputStream bufferedOutputStream = null;
         BufferedInputStream bis = null;
+
         try {
             zipFileOutputStream = new FileOutputStream(zipPath);
             bufferedOutputStream = new BufferedOutputStream(zipFileOutputStream);
@@ -110,7 +111,7 @@ public class ZipFileUtil {
 
             zipOutput = new ZipOutputStream(bufferedOutputStream);
             byte[] buffer = new byte[1024];
-            int read = 0;
+            int read;
 
             for (File file : fileList) {
                 //读入的文件流 *2
@@ -123,13 +124,18 @@ public class ZipFileUtil {
                 while ((read = bis.read(buffer)) != -1) {
                     zipOutput.write(buffer, 0, read);
                 }
+                // 每一个文件的流需要单独关闭
+                fileInputStream.close();
             }
-
-            bis.close();
-            zipOutput.close();
+            if (bis != null) {
+                bis.close();
+            }
+            if (zipOutput != null) {
+                zipOutput.close();
+            }
             //创建输出流，下载zip
             out = response.getOutputStream();
-            in = new FileInputStream(new File(zipPath));
+            in = new FileInputStream(zipPath);
             //设置响应头，控制浏览器下载该文件
             response.setHeader("Content-Type", "application/octet-stream");
             response.setHeader("Content-Disposition",
@@ -138,32 +144,32 @@ public class ZipFileUtil {
                 out.write(buffer, 0, read);
             }
         } catch (Exception e1) {
-            log.error("异常={}", e1);
+            log.error("异常", e1);
             throw new RuntimeException("文件操作出异常");
         } finally {
-
             //释放资源 、删除压缩包
-
             cleanResource(zipFileOutputStream);
             cleanResource(zipOutput);
             cleanResource(in);
             cleanResource(out);
-            cleanResource(fileInputStream);
+            // 在for循环中已经做了关闭 则此处不用关闭 cleanResource(fileInputStream);
             cleanResource(bufferedOutputStream);
             cleanResource(bis);
 
             File zipFile = new File(zipPath);
             boolean delete = zipFile.delete();
-            log.warn("清理临时文件异常，zip下载路径：{}，删除文件结果={}", zipPath, delete);
+            String success = delete ? "成功" : "失败";
+            log.warn("清理临时文件异常，zip下载路径：" + zipPath + "删除文件" + success);
         }
     }
+
 
     public static void cleanResource(InputStream inputStream) {
         if (inputStream != null) {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                log.error("cleanResource inputStream 异常={}", e);
+                log.error("cleanResource inputStream 异常", e);
             }
         }
     }
@@ -173,7 +179,7 @@ public class ZipFileUtil {
             try {
                 outputStream.close();
             } catch (IOException e) {
-                log.error("cleanResource outputStream异常={}", e);
+                log.error("cleanResource outputStream异常", e);
             }
         }
     }
