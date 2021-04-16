@@ -9,7 +9,7 @@ import lombok.Setter;
 /**
  * ${meta.tableComment}
  *
- * @author ${meta.author?default("lamy")}
+ * @author ${meta.author?default("叶超")}
  * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
  */
 @Getter
@@ -20,9 +20,8 @@ public class ${meta.className} {
 	private static final long serialVersionUID = 1L;
 
 <#list meta.columns as col>
-
     <#if true>
-     /**
+    /**
     *  ${col.columnComment}
     */
     </#if>
