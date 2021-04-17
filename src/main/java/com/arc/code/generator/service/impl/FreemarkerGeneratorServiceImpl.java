@@ -3,6 +3,7 @@ package com.arc.code.generator.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.mapper.MetaMapper;
+import com.arc.code.generator.model.domain.meta.ParameterModel;
 import com.arc.code.generator.model.domain.meta.ColumnMeta;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
@@ -106,7 +107,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     public Map<String, Object> execute(ArcPropertiesProvider propertiesProvider) {
         Map<String, Object> verifyAndPrepareParameter = verifyAndPrepareParameter(propertiesProvider);
 
-        Map<String, Object> parameterAndExecuteResultMap = executeByMap(verifyAndPrepareParameter);
+        Map<String, Object> parameterAndExecuteResultMap = executeByContext(verifyAndPrepareParameter);
         return parameterAndExecuteResultMap;
     }
 
@@ -118,10 +119,14 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
      * @return
      */
     @Override
-    public Map<String, Object> executeByMap(Map<String, Object> parameterMap) {
+    public Map<String, Object> executeByContext(Map<String, Object> parameterMap) {
+
+        ParameterModel parameterModel = new ParameterModel();
+        parameterMap.put("author", parameterModel.getAuthor());
+
         //1、参数校验与准备--参数校验2-- 补充一些必要参数
         Assert.notNull(parameterMap, "配置参数不能为空");
-        //文件输出路径
+        //2 文件输出路径准备
         String output = (String) parameterMap.get("output");
         if (!output.endsWith(File.separator)) {
             output = output + File.separator;
@@ -131,7 +136,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         log.debug("[校验后输出文件夹路径]output={}", output);
         log.info("File.separators是={},输出文件是路径output={}", File.separator, output);
 
-        //元数据准备
+        //3 元数据准备
         TableMeta meta = selectTableMate(parameterMap);
         parameterMap.put("meta", meta);
         parameterMap.put("className", meta.getClassName());
@@ -139,7 +144,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         parameterMap.put(TableMeta.class.getName(), meta);
 
 
-        //0、打日志
+        // 打日志
         log.info("execute 方法执行时刻={}", System.currentTimeMillis());
         try {
 
@@ -157,32 +162,31 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             String controllerOutputFileName = output + className + "Controller.java";
 
             // --------------- create model：参数+模板+输出位置绝对路径
-            log.info("创建 model 文件");
-            log.info("创建 mapper接口文件");
-            log.info("创建 mapper.xml文件");
+
 
             process(parameterMap, modelFtl, modelOutputFileName);
             process(parameterMap, mapperXmlFtl, mapperXmlOutputFileName);
             process(parameterMap, mapperInterfaceFtl, mapperInterfaceOutputFileName);
+            // 仅仅输出mapper接口与xml
+            process(parameterMap, requestFtl, requestOutputFileName);
+            process(parameterMap, serviceFtl, serviceOutputFileName);
+            process(parameterMap, serviceImplFtl, serviceImplOutputFileName);
+            process(parameterMap, controllerFtl, controllerOutputFileName);
 
+
+//            boolean onlyMapperAndXml = isOnlyMapperAndXml(parameterMap);
+//            if (onlyMapperAndXml) {
+//                process(parameterMap, modelFtl, modelOutputFileName);
+//                process(parameterMap, mapperXmlFtl, mapperXmlOutputFileName);
+//                process(parameterMap, mapperInterfaceFtl, mapperInterfaceOutputFileName);
+//            } else {
             //是否需要生成 ：requestFtl、serviceFtl、serviceImplFtl、controllerFtl
-
-            boolean onlyMapperAndXml = false;
-            Object mapperAndXml = parameterMap.get("onlyModelMapperAndXml");
-            if (mapperAndXml instanceof String) {
-                onlyMapperAndXml = Boolean.valueOf((String) mapperAndXml);
-            } else if (mapperAndXml instanceof Boolean) {
-                onlyMapperAndXml = (Boolean) mapperAndXml;
-            }
-
-
-            log.info("仅仅输出mapper接口与xml={}", onlyMapperAndXml);
-            if (!onlyMapperAndXml) {
-                process(parameterMap, requestFtl, requestOutputFileName);
-                process(parameterMap, serviceFtl, serviceOutputFileName);
-                process(parameterMap, serviceImplFtl, serviceImplOutputFileName);
-                process(parameterMap, controllerFtl, controllerOutputFileName);
-            }
+//                // 仅仅输出mapper接口与xml
+//                process(parameterMap, requestFtl, requestOutputFileName);
+//                process(parameterMap, serviceFtl, serviceOutputFileName);
+//                process(parameterMap, serviceImplFtl, serviceImplOutputFileName);
+//                process(parameterMap, controllerFtl, controllerOutputFileName);
+//            }
 
         } catch (Exception e) {
             log.debug("##############################################################");
@@ -196,6 +200,16 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         }
         parameterMap.put("result", true);
         return parameterMap;
+    }
+
+    private boolean isOnlyMapperAndXml(Map<String, Object> parameterMap) {
+        Object mapperAndXml = parameterMap.get("onlyModelMapperAndXml");
+        if (mapperAndXml instanceof String) {
+            return Boolean.valueOf((String) mapperAndXml);
+        } else if (mapperAndXml instanceof Boolean) {
+            return (Boolean) mapperAndXml;
+        }
+        return false;
     }
 
 
@@ -520,14 +534,6 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     }
 
 
-    /**
-     * @param parameterMap
-     * @param templateName
-     * @param outputFileFullName
-     * @return
-     * @throws IOException
-     * @throws TemplateException
-     */
     public Object process(Map<String, Object> parameterMap, String templateName, String outputFileFullName) {
         if (parameterMap == null) {
             parameterMap = new HashMap<>(1);

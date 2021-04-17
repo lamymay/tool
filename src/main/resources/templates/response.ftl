@@ -9,7 +9,7 @@ import lombok.Setter;
 /**
  * ${meta.tableComment}
  *
- * @author lamy
+ * @author ${author?default("叶超")}
  * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
  */
 @Getter

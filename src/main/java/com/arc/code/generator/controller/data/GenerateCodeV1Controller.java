@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -40,19 +43,22 @@ public class GenerateCodeV1Controller {
      * 文件下载3-- 遍历一个文件夹
      * POST http://127.0.0.1:8001/zero/test/zip/download/v3   wait response zip data
      *
-     * @param parameterMap Map
-     * @param response     HttpServletResponse
+     * @param parameterContext Map
+     * @param response         HttpServletResponse
      * @return ResponseEntity
      */
     @RequestMapping("/download/v3")
-    public ResponseEntity testV3(@RequestBody Map<String, Object> parameterMap, HttpServletResponse response) {
+    @Deprecated
+    public ResponseEntity testV3(@RequestBody Map<String, Object> parameterContext, HttpServletResponse response) {
 
         //1、创建文件
-        Map<String, Object> resultMap = freemarkerGeneratorService.executeByMap(parameterMap);
+        Map<String, Object> resultMap = freemarkerGeneratorService.executeByContext(parameterContext);
 
         // 结果输出
         Boolean result = (Boolean) resultMap.get("result");
-        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", resultMap.get("output"), (result ? "成功" : "失败"));
+
+        String outputFile = (String) resultMap.get("output");
+        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", outputFile, (result ? "成功" : "失败"));
 
         //异常的
         if (!result) {
@@ -74,16 +80,35 @@ public class GenerateCodeV1Controller {
      * @param parameterMap Map
      */
     @PostMapping(value = "/form")
-    public void testMap2ByForm(@RequestParam Map<String, Object> parameterMap, HttpServletResponse response) {
+    public void testMap2ByForm(@RequestParam Map<String, Object> parameterMap, HttpServletResponse response) throws IOException {
+
+        parameterMap.put("mapperNamespace", "com.test");
+        parameterMap.put("serviceNamespace", "com.test");
         //1、创建文件
-        Map<String, Object> resultMap = freemarkerGeneratorService.executeByMap(parameterMap);
+        Map<String, Object> resultMap = freemarkerGeneratorService.executeByContext(parameterMap);
 
         //2、记录结果
         Boolean result = (Boolean) resultMap.get("result");
-        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", resultMap.get("output"), (result ? "成功" : "失败"));
+        String output = (String) resultMap.get("output");
+
+        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", output, (result ? "成功" : "失败"));
+
+        // 2.5 打开文件夹
+//        openOutputDir(output);
+//        Runtime.getRuntime().exec(output);
 
         //3、文件下载
         ZipFileUtil.downloadFilesZip(response, (String) resultMap.get("output"));
+    }
+
+    public static void openOutputDir(String outPath) {
+        try {
+            Desktop.getDesktop().open(new File(outPath));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            log.error("error", exception);
+
+        }
     }
 
 

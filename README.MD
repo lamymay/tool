@@ -1,5 +1,20 @@
 ### 项目说明--本项目是用于由数据库生成代码的工具『MySQL』-->『JAVA』 
 
+
+
+## 需要优化的
+```text
+1. Controller Service 返回值
+2. Mapper.xml 中的type去掉
+3. Mapper.xml 中的别名去掉
+4. Request相关包精简
+5. 参数由Map传递换用JavaBean
+6. @author 需要使用参数注入
+终极目标:
+6. 输出到一个新项目 应该是可以直接可以执行JUnit测试的!!!
+```
+
+
 ```text
 
 1.  功能：

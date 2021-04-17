@@ -10,7 +10,7 @@ import java.util.Date;
 /**
 * ${meta.tableComment}服务
 *
-* @author lamy
+* @author ${author?default("叶超")}
 * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
 */
 public interface ${meta.className}Mapper {

@@ -24,10 +24,10 @@ public interface FreemarkerGeneratorService {
      * @param parameterMap parameterMap
      * @return Map
      */
-    Map<String, Object> executeByMap(Map<String, Object> parameterMap);
+    Map<String, Object> executeByContext(Map<String, Object> parameterMap);
 
 
     //todo 返回值需要做优化
-//    Map<String, Object> executeByMap(Map<String, Object> parameterMap);
+//    ParameterModel executeByMap(ParameterModel parameter);
 
 }

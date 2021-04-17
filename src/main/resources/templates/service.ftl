@@ -2,7 +2,7 @@ package ${javaPackage};
 
 import lombok.extern.slf4j.Slf4j;
 import ${modelNamespace} .${meta.className} ;
-import com.arc.test.model.request.${meta.className}Request;
+<#--import com.arc.test.model.request.${meta.className}Request;-->
 import java.util.List;
 <#if meta.dateTypeExists>
     import java.util.Date;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
 * ${meta.tableComment}服务
 *
-* @author lamy
+* @author ${author?default("叶超")}
 * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
 */
 public interface ${meta.className}Service {
@@ -47,50 +47,50 @@ public interface ${meta.className}Service {
     */
     ${meta.className} get(Long id);
 
-    /**
-    * 无条件查询全部数据
-    *
-    * @return 全部数据
-    */
-    List<${meta.className}> list();
+<#--    /**-->
+<#--    * 无条件查询全部数据-->
+<#--    *-->
+<#--    * @return 全部数据-->
+<#--    */-->
+<#--    List<${meta.className}> list();-->
 
     /**
     * 条件查询数据列表
-    *
+    * @param ${meta.lowerCaseFirstWordClassName}
     * @return 数据集合
     */
-    List<${meta.className}> list(${meta.className}Request ${meta.lowerCaseFirstWordClassName}Request);
+    List<${meta.className}> list(${meta.className} ${meta.lowerCaseFirstWordClassName});
 
     /**
     * 分页条件查询数据列表
     *
-    * @param ${meta.lowerCaseFirstWordClassName}Request
+    * @param ${meta.lowerCaseFirstWordClassName}
     * @return 数据集合
     */
-    List<${meta.className}> listPage(${meta.className}Request ${meta.lowerCaseFirstWordClassName}Request);
+    List<${meta.className}> listPage(${meta.className} ${meta.lowerCaseFirstWordClassName});
 
-    /**
-    * 批量插入
-    *
-    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
-    * @return 影响条数
-    */
-    Integer saveBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);
+<#--    /**-->
+<#--    * 批量插入-->
+<#--    *-->
+<#--    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合-->
+<#--    * @return 影响条数-->
+<#--    */-->
+<#--    Integer saveBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);-->
 
-    /**
-    * 批量删除
-    *
-    * @param ids 主键集合
-    * @return 影响条数
-    */
+<#--    /**-->
+<#--    * 批量删除-->
+<#--    *-->
+<#--    * @param ids 主键集合-->
+<#--    * @return 影响条数-->
+<#--    */-->
 
-    Integer deleteIdIn(List<Long> ids);
+<#--    Integer deleteIdIn(List<Long> ids);-->
 
-    /**
-    * 批量更新
-    *
-    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
-    * @return 影响条数
-    */
-    Integer updateBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);
+<#--    /**-->
+<#--    * 批量更新-->
+<#--    *-->
+<#--    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合-->
+<#--    * @return 影响条数-->
+<#--    */-->
+<#--    Integer updateBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);-->
 }
