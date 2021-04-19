@@ -19,6 +19,7 @@ import java.util.Date;
 * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
 */
 @Slf4j
+@Service
 public class ${meta.className}ServiceImpl implements ${meta.className}Service {
 
     @Resource
@@ -40,7 +41,7 @@ public class ${meta.className}ServiceImpl implements ${meta.className}Service {
     }
 
     @Override
-    public ${meta.className} get(Long id) {
+    public ${meta.className} getById(Long id) {
         return ${meta.lowerCaseFirstWordClassName}Mapper.get(id);
     }
 

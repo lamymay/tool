@@ -45,7 +45,7 @@ public interface ${meta.className}Service {
     * @param id 主键
     * @return 返回一条数据
     */
-    ${meta.className} get(Long id);
+    ${meta.className} getById(Long id);
 
 <#--    /**-->
 <#--    * 无条件查询全部数据-->
