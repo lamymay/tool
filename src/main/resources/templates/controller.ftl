@@ -29,7 +29,9 @@ public class ${meta.className}Controller {
     * @param ${meta.lowerCaseFirstWordClassName} 实体
     * @return 主键 PK
     */
-    org.springframework.http.ResponseEntity<Long> save(${meta.className} ${meta.lowerCaseFirstWordClassName}){
+    @PostMapping("/save")
+    @ResponseBody
+    org.springframework.http.ResponseEntity<Long> save(@RequestBody ${meta.className} ${meta.lowerCaseFirstWordClassName}){
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.save(${meta.lowerCaseFirstWordClassName}));
     }
 
@@ -39,6 +41,8 @@ public class ${meta.className}Controller {
     * @param id 主键
     * @return 影响数据条数
     */
+    @PostMapping("/delete")
+    @ResponseBody
     org.springframework.http.ResponseEntity<Boolean> delete(Long id){
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.delete(id));
     }
@@ -49,7 +53,9 @@ public class ${meta.className}Controller {
     * @param ${meta.lowerCaseFirstWordClassName}
     * @return 影响数据条数
     */
-     org.springframework.http.ResponseEntity<Boolean> update(${meta.className} ${meta.lowerCaseFirstWordClassName}) {
+    @PostMapping("/update")
+    @ResponseBody
+    org.springframework.http.ResponseEntity<Boolean> update(@RequestBody ${meta.className} ${meta.lowerCaseFirstWordClassName}) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.update(${meta.lowerCaseFirstWordClassName}));
     }
 
@@ -59,6 +65,8 @@ public class ${meta.className}Controller {
     * @param id 主键
     * @return 返回一条数据
     */
+    @PostMapping("/get")
+    @ResponseBody
      org.springframework.http.ResponseEntity<${meta.className}> getById(Long id) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.getById(id));
     }
@@ -68,7 +76,9 @@ public class ${meta.className}Controller {
     *
     * @return 数据集合
     */
-     org.springframework.http.ResponseEntity<List<${meta.className}>> list(${meta.className} query) {
+    @PostMapping("/list")
+    @ResponseBody
+    org.springframework.http.ResponseEntity<List<${meta.className}>> list(${meta.className} query) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.list(query));
     }
 
@@ -78,7 +88,9 @@ public class ${meta.className}Controller {
     * @param request
     * @return 数据集合
     */
-    org.springframework.http.ResponseEntity<List<${meta.className}>> listPage(${meta.className} query) {
+    @PostMapping("/page")
+    @ResponseBody
+    org.springframework.http.ResponseEntity<List<${meta.className}>> listPage(@RequestBody ${meta.className} query) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.listPage(query));
     }
 
@@ -89,6 +101,8 @@ public class ${meta.className}Controller {
     * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
     * @return 影响条数
     */
+    @PostMapping("/save-batch")
+    @ResponseBody
     org.springframework.http.ResponseEntity<Integer> saveBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.saveBatch(${meta.lowerCaseFirstWordClassName}s));
     }
@@ -99,6 +113,8 @@ public class ${meta.className}Controller {
     * @param ids 主键集合
     * @return 影响条数
     */
+    @PostMapping("/delete-id-in")
+    @ResponseBody
     org.springframework.http.ResponseEntity<Integer> deleteIdIn(List<Long> ids) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.deleteIdIn(ids));
     }
@@ -109,6 +125,8 @@ public class ${meta.className}Controller {
     * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
     * @return 影响条数
     */
+    @PostMapping("/update-batch")
+    @ResponseBody
     org.springframework.http.ResponseEntity<Integer> updateBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s) {
         return org.springframework.http.ResponseEntity.ok(${meta.lowerCaseFirstWordClassName}Service.updateBatch(${meta.lowerCaseFirstWordClassName}s));
     }
