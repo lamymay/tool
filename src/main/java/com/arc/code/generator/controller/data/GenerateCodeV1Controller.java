@@ -1,13 +1,35 @@
 package com.arc.code.generator.controller.data;
 
+import com.alibaba.fastjson.JSON;
+import com.arc.code.generator.config.db.DataSourceConfig;
+import com.arc.code.generator.config.db.MybatisConfiguration;
+import com.arc.code.generator.config.properties.ArcPropertiesProvider;
+import com.arc.code.generator.config.properties.auto.ArcCodeGeneratorPropertiesProvider;
+import com.arc.code.generator.config.properties.auto.EnableArcCorePropertiesConfig;
+import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
+import com.arc.code.generator.config.properties.impl.ArcPropertiesProviderImpl1;
+import com.arc.code.generator.config.template.ArcTemplateConfiguration;
 import com.arc.code.generator.mapper.MetaMapper;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
+import com.arc.code.generator.service.impl.FreemarkerGeneratorServiceImpl;
 import com.arc.code.generator.utils.ZipFileUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -15,6 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,34 +64,34 @@ public class GenerateCodeV1Controller {
 
 
     /**
-     * 文件下载3-- 遍历一个文件夹
-     * POST http://127.0.0.1:8001/zero/test/zip/download/v3   wait response zip data
+     * 测试生成逻辑
      *
-     * @param parameterContext Map
-     * @param response         HttpServletResponse
      * @return ResponseEntity
      */
-    @RequestMapping("/download/v3")
-    @Deprecated
-    public ResponseEntity testV3(@RequestBody Map<String, Object> parameterContext, HttpServletResponse response) {
+    @PostMapping(value = "/test/fixed")
+    public ResponseEntity fixed(@RequestBody Map<String, Object> parameterMap, HttpServletResponse response) {
 
-        //1、创建文件
-        Map<String, Object> resultMap = freemarkerGeneratorService.executeByContext(parameterContext);
+        ArcPropertiesProvider result = null;
+        try {
+            long start = System.currentTimeMillis();
 
-        // 结果输出
-        Boolean result = (Boolean) resultMap.get("result");
+            // map 转对象
+            ArcCodeGeneratorContext generatorContext = JSON.parseObject(JSON.toJSONString(parameterMap), ArcCodeGeneratorContext.class);
+            log.debug("map --> ArcCodeGeneratorContext={}", generatorContext);
 
-        String outputFile = (String) resultMap.get("output");
-        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", outputFile, (result ? "成功" : "失败"));
+            // 主逻辑
+            result = freemarkerGeneratorService.execute(generatorContext);
 
-        //异常的
-        if (!result) {
-            return ResponseEntity.ok(resultMap);
+            log.warn("## 测试生成逻辑 耗时=" + (System.currentTimeMillis() - start) + " ms");
+
+        } catch (Exception exception) {
+            String message = "" + exception.getCause() + exception.getCause();
+            log.error("error", exception);
+            MultiValueMap<String, String> map = new HttpHeaders();
+            ResponseEntity responseEntity = new ResponseEntity(message, map, HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseEntity;
         }
-
-        //正常成功的-->文件下载
-        ZipFileUtil.downloadFilesZip(response, (String) resultMap.get("output"));
-        return null;
+        return ResponseEntity.ok(result);
     }
 
 
@@ -85,20 +109,23 @@ public class GenerateCodeV1Controller {
         parameterMap.put("mapperNamespace", "com.test");
         parameterMap.put("serviceNamespace", "com.test");
         //1、创建文件
-        Map<String, Object> resultMap = freemarkerGeneratorService.executeByContext(parameterMap);
+
+        ArcCodeGeneratorContext codeGeneratorContext = JSON.parseObject(JSON.toJSONString(parameterMap), ArcCodeGeneratorContext.class);
+        ArcPropertiesProvider propertiesProvider = freemarkerGeneratorService.executeByContext(codeGeneratorContext);
 
         //2、记录结果
-        Boolean result = (Boolean) resultMap.get("result");
-        String output = (String) resultMap.get("output");
+        boolean success = propertiesProvider.isSuccess();
 
-        log.info("\n代码生成输出目录为 {}    \n生成结果：{}", output, (result ? "成功" : "失败"));
+        String output = propertiesProvider.getOutput();
+
+        log.info("输出目录={}    \n生成结果={}", output, (success ? "成功" : "失败"));
 
         // 2.5 打开文件夹
 //        openOutputDir(output);
 //        Runtime.getRuntime().exec(output);
 
         //3、文件下载
-        ZipFileUtil.downloadFilesZip(response, (String) resultMap.get("output"));
+        ZipFileUtil.downloadFilesZip(response, output);
     }
 
     public static void openOutputDir(String outPath) {
@@ -110,7 +137,6 @@ public class GenerateCodeV1Controller {
 
         }
     }
-
 
     //================== 测试  ==================
 
@@ -129,15 +155,6 @@ public class GenerateCodeV1Controller {
         return bodyBuilder.body(tableMeta);
     }
 
-    /**
-     * 测试生成逻辑
-     *
-     * @return ResponseEntity
-     */
-    @GetMapping(value = "/test/fixed")
-    public ResponseEntity fixed() {
-        return ResponseEntity.ok(freemarkerGeneratorService.execute(null));
-    }
 
 //    /**
 //     * 参数由调用者传入后生成相关数据库表的一套 model、mapper、service、controller
@@ -169,3 +186,14 @@ public class GenerateCodeV1Controller {
 //    }
 
 }
+
+
+//   问题和哎比较多
+// jdbc 问题
+
+
+
+
+
+
+

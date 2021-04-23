@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * 通过Spring自动配置来设置上下文配置
+ *
  * @author May
  * @since 2020/1/6 11:19
  */

@@ -12,22 +12,21 @@ import java.util.Map;
  */
 public interface FreemarkerGeneratorService {
 
-    /**
-     * @param propertiesProvider
-     * @return
-     */
-    Map<String, Object> execute(ArcPropertiesProvider propertiesProvider);
+
+    // 创建 model 文件
+    // 创建 mapper接口文件
+    // 创建 mapper.xml文件
+    // 创建 service 文件
+    // 创建 service.impl 文件
+    // 创建 controller 文件
 
     /**
      * 真正执行数据与模板合成的方法
      *
-     * @param parameterMap parameterMap
-     * @return Map
+     * @param propertiesProvider 上下文配置
+     * @return ArcPropertiesProvider
      */
-    Map<String, Object> executeByContext(Map<String, Object> parameterMap);
+    ArcPropertiesProvider executeByContext(ArcPropertiesProvider propertiesProvider);
 
-
-    //todo 返回值需要做优化
-//    ParameterModel executeByMap(ParameterModel parameter);
 
 }

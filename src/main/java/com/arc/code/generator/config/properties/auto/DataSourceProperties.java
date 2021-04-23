@@ -17,7 +17,7 @@ public class DataSourceProperties {
     //arc.generator.dataSource.url=
     // arc.generator.dataSource.username=root
     //jdbc:mysql://127.0.0.1:3306/test3?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8
-    private String url = ""; //数据库连接url
+    private String url = "jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8"; //数据库连接url
     private String username = "root";  //数据库账号
     private String password = "admin"; //数据库密码
     private String driverClassName = "com.mysql.cj.jdbc.Driver"; //驱动名称

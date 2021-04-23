@@ -1,14 +1,18 @@
 package com.arc.code.generator.model.domain.meta;
 
 import com.arc.code.generator.utils.NameUtil;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
+ * 表的元元素描述数据
+ *
  * @author 叶超
  * @since 2019/10/3 14:45
  */
+@ToString
 public class TableMeta implements Serializable {
 
     private static final long serialVersionUID = -1L;

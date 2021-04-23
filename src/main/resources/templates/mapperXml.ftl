@@ -10,13 +10,13 @@
 	<resultMap id="${meta.resultMapId}" type="${javaPackage}.${meta.className}">
 	<#list meta.columns as col>
 		<#if col.columnKey == 'PRI'>
-		<id property="${col.fieldName}" column="${tableAlias}${col.columnName}" javaType="${col.mapperJavaType}" jdbcType="${col.mapperJdbcType}" />
+		<id property="${col.fieldName}" column="${col.columnName}"/>
 		<#assign pkColumnName = col.columnName>
 		<#assign pkFieldName = col.fieldName>
 		<#assign pkMapperJavaType = col.mapperJavaType>
 		<#assign pkMapperJdbcType = col.mapperJdbcType>
 		<#else>
-		<result property="${col.fieldName}" column="${tableAlias}${col.columnName}" javaType="${col.mapperJavaType}" jdbcType="${col.mapperJdbcType}" />
+		<result property="${col.fieldName}" column="${col.columnName}"/>
 		</#if>
 	</#list>
 	</resultMap>
@@ -24,9 +24,9 @@
 	<sql id="sql${meta.className}Columns">
 	<#list meta.columns as col>
 		<#if col_has_next>
-		${tableAlias}.${col.columnName} AS ${tableAlias}${col.columnName},
+		${col.columnName},
 		<#else>
-		${tableAlias}.${col.columnName} AS ${tableAlias}${col.columnName}
+		${col.columnName}
 		</#if>
 	</#list>
 	</sql>
@@ -47,9 +47,9 @@
 		<#list meta.columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'update_time' && col.columnName != 'update_user'>
 		<#if col_has_next>
-			<@pound></@pound>{${col.fieldName},jdbcType=${col.mapperJdbcType}},
+			<@pound></@pound>{${col.fieldName}},
 		<#else>
-			<@pound></@pound>{${col.fieldName},jdbcType=${col.mapperJdbcType}}
+			<@pound></@pound>{${col.fieldName}}
 		</#if>
 		</#if>
 		</#list>
@@ -61,21 +61,18 @@
 		<set>
 		<#list meta.columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'create_time' && col.columnName != 'create_user'>
-		<#if col.mapperJdbcType == 'VARCHAR'>
-			<if test="${col.fieldName} != null and ${col.fieldName} != ''">, ${col.columnName} = <@pound></@pound>{${col.fieldName},jdbcType=${col.mapperJdbcType}}</if>
-		<#else>
-			<if test="${col.fieldName} != null">, ${col.columnName} = <@pound></@pound>{${col.fieldName},jdbcType=${col.mapperJdbcType}}</if>
-		</#if>
+			<if test="${col.fieldName} != null and ${col.fieldName} != ''">, ${col.columnName} = <@pound></@pound>{${col.fieldName}}</if>
+			<if test="${col.fieldName} != null">, ${col.columnName} = <@pound></@pound>{${col.fieldName}}</if>
 		</#if>
 		</#list>
 		</set>
-		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName},jdbcType=${pkMapperJdbcType}}
+		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName}}
 	</update>
 
 	<select id="get" parameterType="${pkMapperJavaType}" resultMap="${meta.resultMapId}">
 		SELECT <include refid="sql${meta.className}Columns" />
-		FROM ${meta.tableName} ${tableAlias}
-		WHERE ${tableAlias}.${pkColumnName} = <@pound></@pound>{${pkFieldName},jdbcType=${pkMapperJdbcType}}
+		FROM ${meta.tableName}
+		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName}}
 	</select>
 
 </mapper>

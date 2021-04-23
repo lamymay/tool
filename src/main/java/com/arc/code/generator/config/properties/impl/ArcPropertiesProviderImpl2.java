@@ -6,13 +6,14 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 
 /**
- * hardcode 硬编码
- * @author May
+ * 硬编码
+ *
+ * @author 叶超
  * @since 2020/1/6 11:19
  */
+@Deprecated
 @Component("arcPropertiesProviderImpl2")
 public class ArcPropertiesProviderImpl2 implements ArcPropertiesProvider {
-
 
     //数据库链接配置
     String url = "jdbc:mysql://122.51.110.127:3306/zero?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8";
@@ -36,7 +37,7 @@ public class ArcPropertiesProviderImpl2 implements ArcPropertiesProvider {
     String controllerNamespace = "com.arc.core.model.domain.shop";
 
     //T:\data\log\
-    String outputFolder = File.separator+"output_1111";
+    String outputFolder = File.separator + "output_1111";
 
 
     @Override

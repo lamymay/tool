@@ -5,10 +5,24 @@ import com.arc.code.generator.config.properties.auto.DatabaseProperties;
 import com.arc.code.generator.config.properties.auto.ProjectProperties;
 
 /**
- * @author May
+ * 数据源&生成策略
+ *
+ * @author 叶超
  * @since 2020/1/6 11:05
  */
 public interface ArcPropertiesProvider {
+
+    boolean isSuccess();
+
+    void setSuccess(boolean success);
+
+    boolean isUseProjectDefaultDataSource();
+
+    void setUseProjectDefaultDataSource(boolean useProjectDefaultDataSource);
+
+    boolean isScanAllTable();
+
+    void setScanAllTable(boolean scanAllTable);
 
     //数据库 四要素： 地址、账号、密码、驱动
     String getDataSourceUrl();
@@ -111,5 +125,10 @@ public interface ArcPropertiesProvider {
         return new ProjectProperties(rootNamespace, mapperNamespace, modelNamespace, serviceNamespace, serviceImplNamespace, controllerNamespace, outputFolder);
     }
 
+
+
+    void setAuthor(String author);
+
+    void setOutput(String output);
 
 }
