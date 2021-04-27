@@ -1,7 +1,6 @@
 package com.arc.code.generator.model.domain.meta;
 
 import com.arc.code.generator.utils.NameUtil;
-import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serializable;
 
@@ -149,21 +148,21 @@ public class ColumnMeta implements Serializable {
         }
     }
 
-    public String getMapperJdbcType() {
-        switch (dataType) {
-            case "bigint": return JdbcType.BIGINT.name();
-            case "int": return JdbcType.INTEGER.name();
-            case "integer": return JdbcType.INTEGER.name();
-            case "date": return JdbcType.TIMESTAMP.name();
-            case "time": return JdbcType.TIMESTAMP.name();
-            case "datetime": return JdbcType.TIMESTAMP.name();
-            case "timestamp": return JdbcType.TIMESTAMP.name();
-            case "char": return JdbcType.VARCHAR.name();
-            case "varchar": return JdbcType.VARCHAR.name();
-            case "text": return JdbcType.VARCHAR.name();
-            case "longtext": return JdbcType.VARCHAR.name();
-            default: return "";
-        }
-    }
+//    public String getMapperJdbcType() {
+//        switch (dataType) {
+//            case "bigint": return JdbcType.BIGINT.name();
+//            case "int": return JdbcType.INTEGER.name();
+//            case "integer": return JdbcType.INTEGER.name();
+//            case "date": return JdbcType.TIMESTAMP.name();
+//            case "time": return JdbcType.TIMESTAMP.name();
+//            case "datetime": return JdbcType.TIMESTAMP.name();
+//            case "timestamp": return JdbcType.TIMESTAMP.name();
+//            case "char": return JdbcType.VARCHAR.name();
+//            case "varchar": return JdbcType.VARCHAR.name();
+//            case "text": return JdbcType.VARCHAR.name();
+//            case "longtext": return JdbcType.VARCHAR.name();
+//            default: return "";
+//        }
+//    }
 
 }

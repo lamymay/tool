@@ -1,6 +1,5 @@
 package com.arc.code.generator;
 
-import com.arc.code.generator.config.swagger2.EnableSwagger2ForArcApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +13,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @since 2019/10/3 8:01
  */
 @Slf4j
-@EnableSwagger2ForArcApi
 @SpringBootApplication
+//@EnableSwagger2ForArcApi
 public class LaunchGeneratorOverWebServerMain {
 
     public static void main(String[] args) {

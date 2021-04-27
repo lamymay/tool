@@ -1,44 +1,23 @@
 package com.arc.code.generator.controller.data;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.config.db.DataSourceConfig;
-import com.arc.code.generator.config.db.MybatisConfiguration;
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
-import com.arc.code.generator.config.properties.auto.ArcCodeGeneratorPropertiesProvider;
-import com.arc.code.generator.config.properties.auto.EnableArcCorePropertiesConfig;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import com.arc.code.generator.config.properties.impl.ArcPropertiesProviderImpl1;
-import com.arc.code.generator.config.template.ArcTemplateConfiguration;
-import com.arc.code.generator.mapper.MetaMapper;
-import com.arc.code.generator.model.domain.meta.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
-import com.arc.code.generator.service.impl.FreemarkerGeneratorServiceImpl;
 import com.arc.code.generator.utils.ZipFileUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -57,13 +36,6 @@ public class GenerateCodeV1Controller {
     private FreemarkerGeneratorService freemarkerGeneratorService;
 
     /**
-     * 测试基础数据是否正常获取
-     */
-    @Resource
-    private MetaMapper metaMapper;
-
-
-    /**
      * 测试生成逻辑
      *
      * @return ResponseEntity
@@ -80,7 +52,7 @@ public class GenerateCodeV1Controller {
             log.debug("map --> ArcCodeGeneratorContext={}", generatorContext);
 
             // 主逻辑
-            result = freemarkerGeneratorService.execute(generatorContext);
+            result = freemarkerGeneratorService.processByContext(generatorContext);
 
             log.warn("## 测试生成逻辑 耗时=" + (System.currentTimeMillis() - start) + " ms");
 
@@ -111,7 +83,7 @@ public class GenerateCodeV1Controller {
         //1、创建文件
 
         ArcCodeGeneratorContext codeGeneratorContext = JSON.parseObject(JSON.toJSONString(parameterMap), ArcCodeGeneratorContext.class);
-        ArcPropertiesProvider propertiesProvider = freemarkerGeneratorService.executeByContext(codeGeneratorContext);
+        ArcPropertiesProvider propertiesProvider = freemarkerGeneratorService.processByContext(codeGeneratorContext);
 
         //2、记录结果
         boolean success = propertiesProvider.isSuccess();
@@ -138,22 +110,6 @@ public class GenerateCodeV1Controller {
         }
     }
 
-    //================== 测试  ==================
-
-
-    /**
-     * 测试jdbc访问数据库
-     *
-     * @param tableSchema 数据库
-     * @param tableName   表名称
-     * @return TableMeta
-     */
-    @GetMapping(value = "/test/mate/{tableSchema}/{tableName}")
-    public ResponseEntity meate(@PathVariable String tableSchema, @PathVariable String tableName) {
-        TableMeta tableMeta = metaMapper.get(tableSchema, tableName);
-        ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(201);
-        return bodyBuilder.body(tableMeta);
-    }
 
 
 //    /**
@@ -186,14 +142,6 @@ public class GenerateCodeV1Controller {
 //    }
 
 }
-
-
-//   问题和哎比较多
-// jdbc 问题
-
-
-
-
 
 
 

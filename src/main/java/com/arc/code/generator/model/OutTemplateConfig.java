@@ -1,46 +1,50 @@
 package com.arc.code.generator.model;
 
-import freemarker.template.Template;
 import lombok.Data;
 
-import java.io.File;
-import java.util.Map;
-
 /**
+ * data template outFile
+ *
  * @author may
  * @since 2021/4/23 19:42
  */
 @Data
 public class OutTemplateConfig {
 
-    // data template outFile
 
     /**
-     *
+     * 合成模板需要使用的数据
      */
-    //private Map<String, Object> data;
-        private TemplateValue data;
+    private TemplateData data;
 
 //    /**
-//     * 模板文件?
+//     * 模板
 //     */
-//    @Deprecated
-//    private String templateName;
+//    private Template template;
 
-    /**
-     * 模板
-     */
-    private Template template;
+//    /**
+//     * 输出文件
+//     */
+//    private File outputFile;
 
+    private String templateName;
 
-    /**
-     * 输出文件
-     */
-    private File outputFile;
+     private String outputFileFullName;
+
+    private boolean success;
 
 }
-//        Map<Object, Object> parameterMap = new HashMap<>();
-//        parameterMap.put("meta", tableMeta);
-//        parameterMap.put("className", tableMeta.getClassName());
-//        parameterMap.put("lowerCaseFirstWordClassName", tableMeta.getLowerCaseFirstWordClassName());
-//        parameterMap.put(TableMeta.class.getName(), tableMeta);
+
+/*
+    private Map<String, Object> data;
+
+    {
+        Map<Object, Object> parameterMap = new HashMap<>();
+        parameterMap.put("meta", tableMeta);
+        parameterMap.put("className", tableMeta.getClassName());
+        parameterMap.put("lowerCaseFirstWordClassName", tableMeta.getLowerCaseFirstWordClassName());
+        parameterMap.put(TableMeta.class.getName(), tableMeta);
+    }
+
+ */
+

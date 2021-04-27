@@ -2,9 +2,8 @@ package com.arc.code.generator.service.impl;
 
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import com.arc.code.generator.model.MockControl;
 import com.arc.code.generator.model.OutTemplateConfig;
-import com.arc.code.generator.model.TemplateValue;
+import com.arc.code.generator.model.TemplateData;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.MetaService;
@@ -16,15 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static com.arc.code.generator.model.MockControl.defaultOutputPath;
 
@@ -85,17 +86,15 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
 
     @Override
-    public ArcPropertiesProvider executeByContext(ArcPropertiesProvider arcContext) {
+    public ArcPropertiesProvider processByContext(ArcPropertiesProvider arcContext) {
 
         // 1 参数校验与 元数据准备 --参数校验2-- 补充一些必要参数
-        List<OutTemplateConfig> outTemplateConfigList = verifyAndPrepareParameter(arcContext);
-
+        List<OutTemplateConfig> outTemplateConfigList = verifyAndPrepare(arcContext);
+        if (outTemplateConfigList == null || outTemplateConfigList.size() < 1) {
+            throw new RuntimeException("无可输出的文件");
+        }
 
         try {
-
-            if (outTemplateConfigList == null || outTemplateConfigList.size() < 1) {
-                throw new RuntimeException("无可输出的文件");
-            }
 
             //2、模板数据合成输出到文件
             for (OutTemplateConfig outTemplateConfig : outTemplateConfigList) {
@@ -110,27 +109,32 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         return arcContext;
     }
 
+    private static final String modelFtl = "model.ftl";
+    private static final String requestFtl = "request.ftl";
+    private static final String responseFtl = "response.ftl";
+
+    private static final String controllerFtl = "controller.ftl";
+    private static final String serviceImplFtl = "serviceImpl.ftl";
+    private static final String serviceFtl = "service.ftl";
+
+    private static final String mapperInterfaceFtl = "mapperInterface.ftl";
+    private static final String mapperXmlFtl = "mapperXml.ftl";
+    private static final String JAVA_FILE_SUFFIX = ".java";
 
     /**
-     * 参数校验1
-     * 简单把从系统配置文件中收集的配置参数转换为map
+     * 1参数校验 2参数准备
+     * 把从 配置参数转换为 可以直接输出的数据
      *
      * @param arcContext ArcPropertiesProvider
      * @return Map
      */
-    private List<OutTemplateConfig> verifyAndPrepareParameter(ArcPropertiesProvider arcContext) throws IOException {
-        Assert.notNull(arcContext, "配置参数不能为空");
+    private List<OutTemplateConfig> verifyAndPrepare(ArcPropertiesProvider arcContext) {
+        Assert.notNull(arcContext, "配置参数不能缺省");
 
 
         // 获取表格数据 组装输出配置
         List<TableMeta> tableMetas = metaService.selectTableMateListOptimization(arcContext, arcContext.isUseProjectDefaultDataSource());
-        if (tableMetas == null || tableMetas.size() < 1) {
-            return Collections.emptyList();
-        }
-
-
-        // 全局设置 文件的作者
-        arcContext.setAuthor(new ArcCodeGeneratorContext().getAuthor());
+        Assert.notNull(arcContext, "数据表的元数据获取失败");
 
         // 全局设置 输出文件路径处理
         String output = arcContext.getOutput() != null ? arcContext.getOutput() : defaultOutputPath;
@@ -139,15 +143,17 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             arcContext.setOutput(output);
         }
 
+        // 全局设置 文件的作者
+        arcContext.setAuthor(new ArcCodeGeneratorContext().getAuthor());
+
         // 全局设置 输出文件的根目录
         String rootNamespace = arcContext.getProjectProperties().getRootNamespace();
+
 
         List<OutTemplateConfig> outTemplateConfigList = new ArrayList<>(16);
 
         for (TableMeta tableMeta : tableMetas) {
             // 一张表生成 一套代码
-
-
             // model.java
             // mapper.java
             // mapper.xml
@@ -157,111 +163,89 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             // request.java
             // response.java
 
+
+            String className = tableMeta.getClassName(arcContext.getRemovePrefix());
+
+            // 一张表 输出一套 代码
             OutTemplateConfig outTemplateConfig = new OutTemplateConfig();
 
-            // 1 data -- 合成模板用的参数
-            Map<String, Object> parameterMap = new HashMap<>(16);
-            parameterMap.put(ArcPropertiesProvider.class.getName(), arcContext);
-            parameterMap.put("tableAlias", arcContext.getTableAlias());
+            TemplateData dataModel = new TemplateData();
+            dataModel.setTableAlias(arcContext.getTableAlias());
+            dataModel.setJavaPackage(rootNamespace);
+            dataModel.setRootNamespace(rootNamespace);
 
 
-            parameterMap.put("javaPackage", rootNamespace);
-            parameterMap.put("rootNamespace", rootNamespace);
-
-            outTemplateConfig.setData(parameterMap);
-
-            // 2 todo获取模板
-            outTemplateConfig.setTemplate(configuration.getTemplate(MockControl.templateName));
+            // 1 data -- 合成模板用的参数  2模板名称 3输出文件名称
+            outTemplateConfig.setData(dataModel);
+            outTemplateConfig.setTemplateName("model.ftl");
             outTemplateConfigList.add(outTemplateConfig);
 
             // 3 输出文件
-            output+
-            outTemplateConfig.setOutputFile(new File());
+            outTemplateConfig.setOutputFileFullName(output + className + ".java");
         }
 
         return outTemplateConfigList;
     }
 
 
-    public Object process(OutTemplateConfig outTemplateConfig) {
+    public OutTemplateConfig process(OutTemplateConfig outTemplateConfig) {
         log.debug("模板合成,参数OutTemplateConfig={}", JacksonUtils.toJson(outTemplateConfig));
-
         Assert.notNull(outTemplateConfig, "模板合成错误,原因:模板配置为空");
-        // String templateName = outTemplateConfig.getTemplateName();
 
+        TemplateData data = outTemplateConfig.getData();
         String outputFileFullName = outTemplateConfig.getOutputFileFullName();
-        Object data = outTemplateConfig.getData();
 
-        // 获取模板
-        Template template = outTemplateConfig.getTemplate();
-        Assert.notNull(templateName, "模板合成错误,原因:输出模板为空");
         Assert.notNull(outputFileFullName, "模板合成错误,原因:输出文件为空");
         Assert.notNull(data, "模板合成错误,原因:输出参数为空");
 
 
+        File outputFile = createOutFile(outputFileFullName);
 
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(outputFile);
+            Template template = configuration.getTemplate(outTemplateConfig.getTemplateName());
+            template.process(data, writer);
+            //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
+            writer.flush();
+        } catch (IOException exception) {
+            log.error("模板合成IO异常,", exception);
+        } catch (TemplateException exception) {
+            log.error("模板合成异常,", exception);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException exception) {
+                log.error("模板合成异常,writer.close(),", exception);
+            }
+
+        }
+        outTemplateConfig.setSuccess(true);
+        return outTemplateConfig;
     }
 
-    File outputFile = new File(outputFileFullName);
-        if(!outputFile.exists())
-
-    {
-        //createNewFile这个方法只能在一层目录下创建文件，不能跳级创建，尽管可以用mkdir(s)创建多层不存在的目录，但是不要直接一个File对象搞定目录和文件都需要创建的情况，可以在已有目录下直接用createNewFile创建文件
-        if (!outputFile.getParentFile().exists()) {
-            boolean mkdirs = outputFile.getParentFile().mkdirs();
-            String msg = "mkdirs 尝试创建父级路径结果= " + mkdirs;
-            log.info(msg);
-            if (!mkdirs) {
-                throw new RuntimeException(msg);
+    private File createOutFile(String outputFileFullName) {
+        File outputFile = new File(outputFileFullName);
+        if (!outputFile.exists()) {
+            //createNewFile这个方法只能在一层目录下创建文件，不能跳级创建，尽管可以用mkdir(s)创建多层不存在的目录，但是不要直接一个File对象搞定目录和文件都需要创建的情况，可以在已有目录下直接用createNewFile创建文件
+            if (!outputFile.getParentFile().exists()) {
+                boolean mkdirs = outputFile.getParentFile().mkdirs();
+                String msg = "输出文件创建过程中,创建父级路径" + (mkdirs ? "成功" : "失败");
+                log.info(msg);
+                if (!mkdirs) {
+                    throw new RuntimeException(msg);
+                }
+            }
+            try {
+                boolean result = outputFile.createNewFile();
+                log.info("输出文件创建成功={},文件路径={}", result, outputFile.getPath());
+            } catch (IOException exception) {
+                exception.printStackTrace();
+                log.error("输出文件创建异常 createNewFile ", exception);
             }
         }
-        boolean result = false;
-        try {
-            result = outputFile.createNewFile();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            log.error("创建文件异常 createNewFile ", exception);
-        }
-        log.info("############################################");
-        log.info("文件路径={}", outputFile.getPath());
-        log.info("############################################");
-        log.info("javaFile.createNewFile()={}", result);
+        return outputFile;
     }
-
-    FileWriter writer = null;
-        try
-
-    {
-        writer = new FileWriter(outputFile);
-
-
-//        Environment processingEnvironment = template.createProcessingEnvironment(parameterMap, writer, null);
-        template.process(parameterMap, writer);
-        writer.flush();
-
-    } catch(
-    IOException exception)
-
-    {
-        exception.printStackTrace();
-    } catch(
-    TemplateException e)
-
-    {
-        e.printStackTrace();
-    } finally
-
-    {
-        try {
-            writer.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-
-    }
-        return parameterMap;
-//        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
-}
 
 
     //--------------------------------------test --model

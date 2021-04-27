@@ -70,12 +70,33 @@ public class TableMeta implements Serializable {
         this.columns = columns;
     }
 
+    @Deprecated
     public String getClassName() {
         String name = null;
         if (tableName.startsWith("t_")) {
             name = tableName.substring(2);
         } else if (tableName.startsWith("sys_")) {
             name = tableName.substring(4);
+        }
+
+        if (name != null) {
+            String[] arr = name.split("_");
+            StringBuilder sb = new StringBuilder();
+            for (String s : arr) {
+                sb.append(NameUtil.upperCaseFirstWord(s));
+            }
+            return sb.toString();
+        }
+
+        return tableName;
+    }
+
+    public String getClassName(String removePrefix) {
+        String name = null;
+        if (removePrefix != null) {
+            if (tableName.startsWith(removePrefix)) {
+                name = tableName.substring(removePrefix.length());
+            }
         }
 
         if (name != null) {

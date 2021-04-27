@@ -1,12 +1,13 @@
 package com.arc.code.generator.service;
 
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
-import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 
 import java.util.List;
 
 /**
+ * 表yuan元数据获取
+ *
  * @author may
  * @since 2021/4/23 11:01
  */
@@ -30,7 +31,7 @@ public interface MetaService {
      */
     List<TableMeta> selectTableMateListOptimization(ArcPropertiesProvider arcPropertiesProvider, boolean useProjectDefaultDataSource);
 
-    TableMeta selectTableMateByMybatis(ArcPropertiesProvider arcPropertiesProvider);
+//    TableMeta selectTableMateByMybatis(ArcPropertiesProvider arcPropertiesProvider);
 
     TableMeta selectTableMateByJDBC(ArcPropertiesProvider propertiesProvider);
 }

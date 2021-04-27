@@ -12,6 +12,10 @@ import com.arc.code.generator.config.properties.auto.ProjectProperties;
  */
 public interface ArcPropertiesProvider {
 
+    String getRemovePrefix();
+
+    void setRemovePrefix(String removePrefix);
+
     boolean isSuccess();
 
     void setSuccess(boolean success);
