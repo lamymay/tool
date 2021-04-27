@@ -3,7 +3,6 @@ package com.arc.code.generator.service.impl;
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.OutTemplateConfig;
-import com.arc.code.generator.model.TemplateData;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.MetaService;
@@ -22,10 +21,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.arc.code.generator.model.MockControl.defaultOutputPath;
 
@@ -169,14 +166,29 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             // 一张表 输出一套 代码
             OutTemplateConfig outTemplateConfig = new OutTemplateConfig();
 
-            TemplateData dataModel = new TemplateData();
-            dataModel.setTableAlias(arcContext.getTableAlias());
-            dataModel.setJavaPackage(rootNamespace);
-            dataModel.setRootNamespace(rootNamespace);
+//            TemplateData dataModel = new TemplateData();
+            // 表名称
+//            dataModel.setTableName(tableMeta.getTableName());
+
+            // 表的注释
+//            dataModel.setTableComment(tableMeta.getTableComment());
+
+//            dataModel.setTableAlias(arcContext.getTableAlias());
+//            dataModel.setJavaPackage(rootNamespace);
+//            dataModel.setRootNamespace(rootNamespace);
 
 
             // 1 data -- 合成模板用的参数  2模板名称 3输出文件名称
-            outTemplateConfig.setData(dataModel);
+
+            tableMeta.setTableAlias(arcContext.getTableAlias());
+//            tableMeta.setJavaPackage(rootNamespace);
+            tableMeta.setRootNamespace(rootNamespace);
+            tableMeta.setAuthor(arcContext.getAuthor());
+
+
+            outTemplateConfig.setMeta(tableMeta);
+
+
             outTemplateConfig.setTemplateName("model.ftl");
             outTemplateConfigList.add(outTemplateConfig);
 
@@ -192,7 +204,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         log.debug("模板合成,参数OutTemplateConfig={}", JacksonUtils.toJson(outTemplateConfig));
         Assert.notNull(outTemplateConfig, "模板合成错误,原因:模板配置为空");
 
-        TemplateData data = outTemplateConfig.getData();
+        TableMeta data = outTemplateConfig.getMeta();
         String outputFileFullName = outTemplateConfig.getOutputFileFullName();
 
         Assert.notNull(outputFileFullName, "模板合成错误,原因:输出文件为空");
@@ -214,7 +226,9 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             log.error("模板合成异常,", exception);
         } finally {
             try {
-                writer.close();
+                if (writer != null) {
+                    writer.close();
+                }
             } catch (IOException exception) {
                 log.error("模板合成异常,writer.close(),", exception);
             }
@@ -248,42 +262,5 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     }
 
 
-    //--------------------------------------test --model
-    private void generateStandardModel(Map<String, Object> parameterMap) throws Exception {
-        log.debug("Freemarker configuration ={}", configuration);
-        log.debug("参数 parameterMap ={}", JacksonUtils.toJson(parameterMap));
-
-        Template template = configuration.getTemplate("model.ftl");
-        log.info("Use template file: {}. ", template.getName());
-
-
-        //输出文件处理
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        URL resource = classLoader.getResource(".");
-        //target  目录
-        String path = new File(resource.getPath()).getParent();
-        //todo 参数校验    target +  传入参数
-        path = path + File.separator + ((ArcPropertiesProvider) parameterMap.get(ArcPropertiesProvider.class.getName())).getProjectProperties().getOutputFolder() + File.separator;
-
-        TableMeta tableMeta = (TableMeta) parameterMap.get(TableMeta.class.getName());
-        String className = tableMeta.getClassName();
-        String newFilePath = path + className + JAVA_FILE_SUFFIX;
-        parameterMap.put("output", newFilePath);
-        log.debug("文件名称={}", newFilePath);
-        File javaFile = new File(newFilePath);
-        if (!javaFile.exists()) {
-            //createNewFile这个方法只能在一层目录下创建文件，不能跳级创建，尽管可以用mkdir(s)创建多层不存在的目录，但是不要直接一个File对象搞定目录和文件都需要创建的情况，可以在已有目录下直接用createNewFile创建文件
-            if (!javaFile.getParentFile().exists()) {
-                boolean mkdirs = javaFile.getParentFile().mkdirs();
-                log.debug("父级路径创建结果={}", mkdirs);
-            }
-
-            boolean result = javaFile.createNewFile();
-            log.info("javaFile.createNewFile()={}", result);
-
-        }
-        template.process(parameterMap, new FileWriter(javaFile));
-
-    }
 }
 

@@ -3,22 +3,33 @@ package com.arc.code.generator.model;
 import com.arc.code.generator.model.domain.meta.TableMeta;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author may
  * @since 2021/4/23 17:37
  */
 @Data
-//@Deprecated
+@Deprecated
 public class TemplateData {
 
     /**
      * 表的元元素描述数据
      */
+    @Deprecated
     private TableMeta meta;
 
     private String className;
 
     private String tableName;
+
+    private Date createTime=new Date();
+
+    /**
+     * 表注释
+     */
+    private String tableComment;
+
     private String tableAlias;
     private String javaPackage;
     private String rootNamespace;

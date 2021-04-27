@@ -1,9 +1,15 @@
 package com.arc.code.generator.test;
 
+import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
+import com.arc.code.generator.model.domain.meta.TableMeta;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Map;
 
 import static com.arc.code.generator.controller.data.GenerateCodeV1Controller.openOutputDir;
 
@@ -11,6 +17,7 @@ import static com.arc.code.generator.controller.data.GenerateCodeV1Controller.op
  * @author may
  * @since 2021/4/27 14:24
  */
+@Slf4j
 public class CmdTest {
 
 
@@ -49,6 +56,39 @@ public class CmdTest {
                 }
             }
         }
+    }
+
+    private void generateStandardModel(Map<String, Object> parameterMap) throws Exception {
+
+
+        //输出文件处理
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL resource = classLoader.getResource(".");
+        //target  目录
+        String path = new File(resource.getPath()).getParent();
+        //todo 参数校验    target +  传入参数
+        path = path + File.separator + ((ArcPropertiesProvider) parameterMap.get(ArcPropertiesProvider.class.getName())).getProjectProperties().getOutputFolder() + File.separator;
+
+        TableMeta tableMeta = (TableMeta) parameterMap.get(TableMeta.class.getName());
+        String className = tableMeta.getClassName();
+        String newFilePath = path + className + ".java";
+        parameterMap.put("output", newFilePath);
+        log.debug("文件名称={}", newFilePath);
+        File javaFile = new File(newFilePath);
+        if (!javaFile.exists()) {
+            //createNewFile这个方法只能在一层目录下创建文件，不能跳级创建，尽管可以用mkdir(s)创建多层不存在的目录，但是不要直接一个File对象搞定目录和文件都需要创建的情况，可以在已有目录下直接用createNewFile创建文件
+            if (!javaFile.getParentFile().exists()) {
+                boolean mkdirs = javaFile.getParentFile().mkdirs();
+                log.debug("父级路径创建结果={}", mkdirs);
+            }
+
+            boolean result = javaFile.createNewFile();
+            log.info("javaFile.createNewFile()={}", result);
+
+        }
+//        Template template = configuration.getTemplate("model.ftl");
+//        template.process(parameterMap, new FileWriter(javaFile));
+
     }
 }
 

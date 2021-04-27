@@ -177,13 +177,12 @@ public class MetaServiceImpl implements MetaService {
             resultSet.close();
             preparedStatement.close();
             connection.close();
-        } catch (SQLException se) {
+        } catch (SQLException exception) {
             // 处理 JDBC 错误
-            log.error("异常", se);
-        } catch (Exception e2) {
+            log.error("ERROR", exception);
+        } catch (Exception exception) {
             // 处理 Class.forName 错误
-            e2.printStackTrace();
-            log.error("结果={}", e2);
+            log.error("ERROR", exception);
         } finally {
             // 关闭资源
             try {

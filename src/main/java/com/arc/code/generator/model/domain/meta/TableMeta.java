@@ -1,9 +1,11 @@
 package com.arc.code.generator.model.domain.meta;
 
 import com.arc.code.generator.utils.NameUtil;
+import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,6 +14,7 @@ import java.util.List;
  * @author 叶超
  * @since 2019/10/3 14:45
  */
+@Data
 @ToString
 public class TableMeta implements Serializable {
 
@@ -36,6 +39,38 @@ public class TableMeta implements Serializable {
      * 列
      */
     private List<ColumnMeta> columns;
+
+
+    /**
+     * 表的元元素描述数据
+     */
+    @Deprecated
+    private TableMeta meta;
+
+//    private String className;
+
+    private Date createTime = new Date();
+
+
+    private String author;
+    private String tableAlias;
+    private String javaPackage;
+    private String rootNamespace;
+
+    private String lowerCaseFirstWordClassName;
+
+
+//    private String mapperXmlOutputFileName = className + "Mapper.xml";
+//    private String modelOutputFileName = className+".java";
+//    private String mapperInterfaceOutputFileName = className + "Mapper.java";
+//
+//    private String serviceOutputFileName = className + "Service.java";
+//    private String serviceImplOutputFileName = className + "ServiceImpl.java";
+//
+//    private String controllerOutputFileName = className + "Controller.java";
+//
+//    private String requestOutputFileName = className + "Request.java";
+//    private String responseOutputFileName = className + "Response.java";
 
 
     public String getTableName() {
@@ -91,8 +126,14 @@ public class TableMeta implements Serializable {
         return tableName;
     }
 
+    /**
+     * 获取类名称
+     *
+     * @param removePrefix 需要去掉的前缀
+     * @return 优化前缀的类名称
+     */
     public String getClassName(String removePrefix) {
-        String name = null;
+        String name = tableName;
         if (removePrefix != null) {
             if (tableName.startsWith(removePrefix)) {
                 name = tableName.substring(removePrefix.length());

@@ -20,13 +20,14 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     private String driverClassName; //驱动名称
 
     private String schemaName;//schemaName(数据库名)【必要】
-
-
     private String tableName;//表名
-    private String tableAlias;//数据库表在mapper的sql中的别名
     private String removePrefix;//数据库表的前缀
 
-    private boolean onlyModelMapperAndXml;
+    private String tableAlias;//数据库表在mapper的sql中的别名
+    private boolean onlyModelMapperAndXml;// 仅仅最小生成,会输出model&xml&mapper接口
+    private String author;//"@author" 需要指定,缺省情况下获取机器当前用户
+
+    private String output = File.separator + "output_";// //T:\data\log\
 
     //输出配置
     private String rootNamespace = "com.arc.zero";
@@ -36,10 +37,6 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     private String serviceImplNamespace = "com.arc.core.model.domain.shop";
     private String controllerNamespace = "com.arc.core.model.domain.shop";
 
-
-    private String output = File.separator + "output_";// //T:\data\log\
-
-    private String author;//"@author" 需要指定,缺省情况下获取机器当前用户
 
     @Override
     public String getOutput() {
@@ -173,14 +170,13 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     }
 
 
+    @Override
     public String getAuthor() {
         if (this.author == null) {
             author = System.getProperty("user.name");
         }
         return this.author;
     }
-
-
 
 
 }

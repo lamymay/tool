@@ -4,6 +4,8 @@ import com.arc.code.generator.utils.NameUtil;
 
 import java.io.Serializable;
 
+import static java.sql.JDBCType.*;
+
 /**
  * @author 叶超
  * @since 2019/10/3 14:46
@@ -116,38 +118,87 @@ public class ColumnMeta implements Serializable {
 
     public String getModelFieldType() {
         switch (dataType) {
-            case "bigint": return "Long";
-            case "int": return "Integer";
-            case "integer": return "Integer";
-            case "date": return "Date";
-            case "time": return "Date";
-            case "datetime": return "Date";
-            case "timestamp": return "Date";
-            case "char": return "String";
-            case "varchar": return "String";
-            case "text": return "String";
-            case "longtext": return "String";
-            default: return "Object";
+            case "bigint":
+                return "Long";
+            case "int":
+                return "Integer";
+            case "integer":
+                return "Integer";
+            case "date":
+                return "Date";
+            case "time":
+                return "Date";
+            case "datetime":
+                return "Date";
+            case "timestamp":
+                return "Date";
+            case "char":
+                return "String";
+            case "varchar":
+                return "String";
+            case "text":
+                return "String";
+            case "longtext":
+                return "String";
+            default:
+                return "Object";
         }
     }
 
     public String getMapperJavaType() {
         switch (dataType) {
-            case "bigint": return "long";
-            case "int": return "int";
-            case "integer": return "int";
-            case "date": return "java.util.Date";
-            case "time": return "java.util.Date";
-            case "datetime": return "java.util.Date";
-            case "timestamp": return "java.util.Date";
-            case "char": return "string";
-            case "varchar": return "string";
-            case "text": return "string";
-            case "longtext": return "string";
-            default: return "";
+            case "bigint":
+                return "long";
+            case "int":
+                return "int";
+            case "integer":
+                return "int";
+            case "date":
+                return "java.util.Date";
+            case "time":
+                return "java.util.Date";
+            case "datetime":
+                return "java.util.Date";
+            case "timestamp":
+                return "java.util.Date";
+            case "char":
+                return "string";
+            case "varchar":
+                return "string";
+            case "text":
+                return "string";
+            case "longtext":
+                return "string";
+            default:
+                return "";
         }
     }
 
+    public String getMapperJdbcType() {
+        switch (dataType) {
+
+            case "int":
+            case "integer":
+                return INTEGER.name();
+
+            case "bigint":
+                return BIGINT.name();
+
+            case "date":
+            case "datetime":
+            case "time":
+            case "timestamp":
+                return TIMESTAMP.name();
+
+            case "char":
+            case "varchar":
+            case "text":
+            case "longtext":
+                return VARCHAR.name();
+            default:
+                return "";
+        }
+    }
 //    public String getMapperJdbcType() {
 //        switch (dataType) {
 //            case "bigint": return JdbcType.BIGINT.name();

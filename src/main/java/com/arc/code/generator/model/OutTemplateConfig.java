@@ -1,5 +1,6 @@
 package com.arc.code.generator.model;
 
+import com.arc.code.generator.model.domain.meta.TableMeta;
 import lombok.Data;
 
 /**
@@ -15,7 +16,7 @@ public class OutTemplateConfig {
     /**
      * 合成模板需要使用的数据
      */
-    private TemplateData data;
+    private TableMeta meta;
 
 //    /**
 //     * 模板

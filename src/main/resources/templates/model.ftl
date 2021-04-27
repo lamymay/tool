@@ -1,25 +1,25 @@
-package ${javaPackage};
+package ${rootNamespace};
 
-<#if meta.dateTypeExists>
-import java.util.Date;
-</#if>
+<#--<#if meta.meta.dateTypeExists>-->
+<#--import java.util.Date;-->
+<#--</#if>-->
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * ${meta.tableComment}
- *
- * @author ${meta.author?default("叶超")}
- * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
- */
+* ${tableComment}
+*
+* @author ${author?default("叶超")}
+* @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
+*/
 @Getter
 @Setter
 <#--public class ${meta.className} extends BaseModel {-->
-public class ${meta.className} {
+public class ${className} implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+private static final long serialVersionUID = 1L;
 
-<#list meta.columns as col>
+<#list columns as col>
     <#if true>
     /**
     *  ${col.columnComment}

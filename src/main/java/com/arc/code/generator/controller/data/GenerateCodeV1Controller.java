@@ -36,38 +36,6 @@ public class GenerateCodeV1Controller {
     private FreemarkerGeneratorService freemarkerGeneratorService;
 
     /**
-     * 测试生成逻辑
-     *
-     * @return ResponseEntity
-     */
-    @PostMapping(value = "/test/fixed")
-    public ResponseEntity fixed(@RequestBody Map<String, Object> parameterMap, HttpServletResponse response) {
-
-        ArcPropertiesProvider result = null;
-        try {
-            long start = System.currentTimeMillis();
-
-            // map 转对象
-            ArcCodeGeneratorContext generatorContext = JSON.parseObject(JSON.toJSONString(parameterMap), ArcCodeGeneratorContext.class);
-            log.debug("map --> ArcCodeGeneratorContext={}", generatorContext);
-
-            // 主逻辑
-            result = freemarkerGeneratorService.processByContext(generatorContext);
-
-            log.warn("## 测试生成逻辑 耗时=" + (System.currentTimeMillis() - start) + " ms");
-
-        } catch (Exception exception) {
-            String message = "" + exception.getCause() + exception.getCause();
-            log.error("error", exception);
-            MultiValueMap<String, String> map = new HttpHeaders();
-            ResponseEntity responseEntity = new ResponseEntity(message, map, HttpStatus.INTERNAL_SERVER_ERROR);
-            return responseEntity;
-        }
-        return ResponseEntity.ok(result);
-    }
-
-
-    /**
      * success
      * 表单提交可以用
      * -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
@@ -110,7 +78,44 @@ public class GenerateCodeV1Controller {
         }
     }
 
+    /**
+     * 测试生成逻辑
+     *
+     * @return ResponseEntity
+     */
+    @PostMapping(value = "/jdbc")
+    public ResponseEntity fixed(@RequestBody ArcCodeGeneratorContext generatorContext) {
+        try {
+            // 主逻辑
+            ArcPropertiesProvider result = freemarkerGeneratorService.processByContext(generatorContext);
+            String output = generatorContext.getOutput();
 
+        } catch (Exception exception) {
+            String message = "" + exception.getCause() + exception.getCause();
+            log.error("error", exception);
+            MultiValueMap<String, String> map = new HttpHeaders();
+            ResponseEntity responseEntity = new ResponseEntity(message, map, HttpStatus.INTERNAL_SERVER_ERROR);
+            return responseEntity;
+        }
+        return ResponseEntity.ok("success");
+    }
+
+
+    public static void main(String[] args) {
+        ArcCodeGeneratorContext propertiesProvider = new ArcCodeGeneratorContext();
+
+        propertiesProvider.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        propertiesProvider.setUrl("jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8");
+        propertiesProvider.setUsername("root");
+        propertiesProvider.setPassword("admin");
+
+        propertiesProvider.setSchemaName("test");
+        propertiesProvider.setSchemaName("test");
+        propertiesProvider.setAuthor("arc");
+        propertiesProvider.setOutput("E:\\free");
+
+        System.out.println(JSON.toJSONString(propertiesProvider));
+    }
 
 //    /**
 //     * 参数由调用者传入后生成相关数据库表的一套 model、mapper、service、controller

@@ -79,7 +79,7 @@ public interface ArcPropertiesProvider {
      * 是否仅仅输出mapper接口与xml
      * 默认false=即输出：model、mapper、interface、service、controller
      *
-     * @return
+     * @return 仅仅最小生成, 会输出model&xml&mapper接口
      */
     boolean getOnlyModelMapperAndXml();
 
@@ -88,14 +88,14 @@ public interface ArcPropertiesProvider {
      * 是否仅仅使用行尾注释而禁止多行注释
      * 默认 false =即输出文件注释规范为：多行注释而非单行注释
      *
-     * @return
+     * @return 注释类型
      */
     boolean getOnlyEnableEndOfLineCommentAndDisableMultilineComment();
 
     /**
      * 默认输出文件夹
      *
-     * @return
+     * @return 默认输出文件夹
      */
     default String getOutput() {
         return getProjectOutputFolder();
@@ -130,9 +130,9 @@ public interface ArcPropertiesProvider {
     }
 
 
-
     void setAuthor(String author);
 
     void setOutput(String output);
 
+    String getAuthor();
 }
