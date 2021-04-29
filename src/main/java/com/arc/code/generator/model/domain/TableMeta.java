@@ -1,8 +1,9 @@
-package com.arc.code.generator.model.domain.meta;
+package com.arc.code.generator.model.domain;
 
 import com.arc.code.generator.utils.NameUtil;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -36,16 +37,26 @@ public class TableMeta implements Serializable {
     private String tableComment;
 
     /**
+     * mapper名称
+     */
+    private String mapperName;
+
+    /**
+     * todo 导入时间
+     */
+    private boolean importDate = true;
+
+    /**
      * 列
      */
     private List<ColumnMeta> columns;
 
 
-    /**
-     * 表的元元素描述数据
-     */
-    @Deprecated
-    private TableMeta meta;
+//    /**
+//     * 表的元元素描述数据
+//     */
+//    @Deprecated
+//    private TableMeta meta;
 
 //    private String className;
 
@@ -132,7 +143,7 @@ public class TableMeta implements Serializable {
      * @param removePrefix 需要去掉的前缀
      * @return 优化前缀的类名称
      */
-    public String getClassName(String removePrefix) {
+    public String getClassName(@Nullable String removePrefix) {
         String name = tableName;
         if (removePrefix != null) {
             if (tableName.startsWith(removePrefix)) {

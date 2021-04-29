@@ -1,6 +1,6 @@
 package com.arc.code.generator.model;
 
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 import lombok.Data;
 
 /**

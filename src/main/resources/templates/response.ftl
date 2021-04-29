@@ -1,4 +1,4 @@
-package ${javaPackage};
+package ${rootNamespace};
 
 <#if meta.dateTypeExists>
 import java.util.Date;

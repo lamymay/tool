@@ -19,6 +19,7 @@ public class LaunchGeneratorOverWebServerMain {
 
     public static void main(String[] args) {
         SpringApplication.run(LaunchGeneratorOverWebServerMain.class, args);
+
     }
 
 }

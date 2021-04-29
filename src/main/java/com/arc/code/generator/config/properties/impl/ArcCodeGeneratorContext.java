@@ -12,7 +12,7 @@ import java.io.File;
  * @since 2021/4/16 18:19
  */
 @Data
-public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
+public final class ArcCodeGeneratorContext implements ArcPropertiesProvider {
 
     private String url; //数据库连接url
     private String username;  //数据库账号
@@ -24,7 +24,6 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     private String removePrefix;//数据库表的前缀
 
     private String tableAlias;//数据库表在mapper的sql中的别名
-    private boolean onlyModelMapperAndXml;// 仅仅最小生成,会输出model&xml&mapper接口
     private String author;//"@author" 需要指定,缺省情况下获取机器当前用户
 
     private String output = File.separator + "output_";// //T:\data\log\
@@ -37,6 +36,17 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     private String serviceImplNamespace = "com.arc.core.model.domain.shop";
     private String controllerNamespace = "com.arc.core.model.domain.shop";
 
+    Integer generateType;
+
+    @Override
+    public Integer getGenerateType() {
+        return generateType;
+    }
+
+    @Override
+    public void setGenerateType(Integer generateType) {
+        this.generateType = generateType;
+    }
 
     @Override
     public String getOutput() {
@@ -125,12 +135,12 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     }
 
     @Override
-    public String getProjectRootNamespace() {
+    public String getRootNamespace() {
         return rootNamespace;
     }
 
     @Override
-    public String getProjectMapperNamespace() {
+    public String getMapperNamespace() {
         return mapperNamespace;
     }
 
@@ -157,11 +167,6 @@ public class ArcCodeGeneratorContext implements ArcPropertiesProvider {
     @Override
     public String getProjectOutputFolder() {
         return output;
-    }
-
-    @Override
-    public boolean getOnlyModelMapperAndXml() {
-        return onlyModelMapperAndXml;
     }
 
     @Override

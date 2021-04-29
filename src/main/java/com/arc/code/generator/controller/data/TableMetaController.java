@@ -1,7 +1,7 @@
 package com.arc.code.generator.controller.data;
 
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.MetaService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package ${javaPackage};
+package ${rootNamespace};
 
 import lombok.extern.slf4j.Slf4j;
 import ${modelNamespace} .${meta.className} ;

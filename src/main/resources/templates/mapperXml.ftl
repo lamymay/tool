@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- Mybatis mapper for ${meta.className}  Auto generated over template -->
+<!-- Mybatis mapper for ${className}  Auto generated over template -->
 <#assign pkColumnName = ''>
 <#assign pkFieldName = ''>
 <#assign pkMapperJavaType = ''>
 <#assign pkMapperJdbcType = ''>
 <#macro pound>#</#macro>
-<mapper namespace="com.arc.code.generator.mapper.${meta.mapperName}">
-	<resultMap id="${meta.resultMapId}" type="${javaPackage}.${meta.className}">
+<mapper namespace="com.arc.code.generator.mapper.${mapperName}">
+	<resultMap id="${meta.resultMapId}" type="${rootNamespace}.${meta.className}">
 	<#list meta.columns as col>
 		<#if col.columnKey == 'PRI'>
 		<id property="${col.fieldName}" column="${col.columnName}"/>
@@ -31,7 +31,7 @@
 	</#list>
 	</sql>
 
-	<insert id="save" parameterType="${javaPackage}.${meta.className}" useGeneratedKeys="true" keyProperty="${pkFieldName}">
+	<insert id="save" parameterType="${rootNamespace}.${meta.className}" useGeneratedKeys="true" keyProperty="${pkFieldName}">
 		INSERT INTO ${meta.tableName} (
 		<#list meta.columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'update_time' && col.columnName != 'update_user'>
@@ -56,7 +56,7 @@
 		)
 	</insert>
 
-	<update id="update" parameterType="${javaPackage}.${meta.className}">
+	<update id="update" parameterType="${rootNamespace}.${meta.className}">
 		UPDATE ${meta.tableName}
 		<set>
 		<#list meta.columns as col>

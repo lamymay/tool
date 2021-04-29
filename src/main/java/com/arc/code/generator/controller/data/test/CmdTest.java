@@ -1,8 +1,8 @@
-package com.arc.code.generator.test;
+package com.arc.code.generator.controller.data.test;
 
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;

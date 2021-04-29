@@ -3,8 +3,8 @@ package com.arc.code.generator.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import com.arc.code.generator.model.domain.meta.ColumnMeta;
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.ColumnMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.MetaService;
 import com.arc.code.generator.utils.NameUtil;
 import org.slf4j.Logger;
@@ -26,6 +26,10 @@ import static com.arc.code.generator.model.MockControl.scanAllTable;
 public class MetaServiceImpl implements MetaService {
 
     private static final Logger log = LoggerFactory.getLogger(MetaServiceImpl.class);
+
+    public MetaServiceImpl() {
+        System.out.println("MetaServiceImpl初始化!!");
+    }
 
 
 //    /**
@@ -96,7 +100,6 @@ public class MetaServiceImpl implements MetaService {
             // 打开链接
             log.info("连接数据库....");
             connection = DriverManager.getConnection(dbUrl, username, password);
-
             // 执行查询
             System.out.println(" 实例化Statement对象...");
 

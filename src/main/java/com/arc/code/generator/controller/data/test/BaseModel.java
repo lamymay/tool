@@ -1,4 +1,4 @@
-package com.arc.code.generator.model;
+package com.arc.code.generator.controller.data.test;
 
 import java.io.Serializable;
 import java.lang.annotation.*;

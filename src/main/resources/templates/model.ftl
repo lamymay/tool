@@ -28,3 +28,5 @@ private static final long serialVersionUID = 1L;
     private ${col.modelFieldType} ${col.fieldName};<#if false>// ${col.columnComment}</#if>
 </#list>
 }
+
+

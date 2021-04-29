@@ -1,4 +1,4 @@
-package com.arc.code.generator.model.domain.meta;
+package com.arc.code.generator.model.domain;
 
 import com.arc.code.generator.utils.NameUtil;
 

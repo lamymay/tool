@@ -68,15 +68,6 @@ public class GenerateCodeV1Controller {
         ZipFileUtil.downloadFilesZip(response, output);
     }
 
-    public static void openOutputDir(String outPath) {
-        try {
-            Desktop.getDesktop().open(new File(outPath));
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            log.error("error", exception);
-
-        }
-    }
 
     /**
      * 测试生成逻辑
@@ -101,21 +92,17 @@ public class GenerateCodeV1Controller {
     }
 
 
-    public static void main(String[] args) {
-        ArcCodeGeneratorContext propertiesProvider = new ArcCodeGeneratorContext();
 
-        propertiesProvider.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        propertiesProvider.setUrl("jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8");
-        propertiesProvider.setUsername("root");
-        propertiesProvider.setPassword("admin");
-
-        propertiesProvider.setSchemaName("test");
-        propertiesProvider.setSchemaName("test");
-        propertiesProvider.setAuthor("arc");
-        propertiesProvider.setOutput("E:\\free");
-
-        System.out.println(JSON.toJSONString(propertiesProvider));
+    public static void openOutputDir(String outPath) {
+        try {
+            Desktop.getDesktop().open(new File(outPath));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            log.error("error", exception);
+        }
     }
+
+}
 
 //    /**
 //     * 参数由调用者传入后生成相关数据库表的一套 model、mapper、service、controller
@@ -146,7 +133,13 @@ public class GenerateCodeV1Controller {
 //        return ResponseEntity.ok(result);
 //    }
 
-}
 
-
+//class ProcessResult {
+//
+//    private String filename;
+//
+//    private boolean success;
+//
+//}
+//
 

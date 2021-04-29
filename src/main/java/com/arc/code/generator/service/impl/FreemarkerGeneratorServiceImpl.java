@@ -1,15 +1,17 @@
 package com.arc.code.generator.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.OutTemplateConfig;
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.MetaService;
 import com.arc.code.generator.utils.JacksonUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,12 +19,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.arc.code.generator.model.MockControl.defaultOutputPath;
 
@@ -47,7 +51,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     /**
      * 模板工具配置
      */
-    @Resource
+    @Autowired
     private Configuration configuration;
 
     /**
@@ -79,6 +83,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         //        if (!tableAlias.endsWith("_")) {
         //            tableAlias += "_";
         //        }
+
+        ConcurrentHashMap concurrentHashMap = new ConcurrentHashMap();
     }
 
 
@@ -106,16 +112,16 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         return arcContext;
     }
 
-    private static final String modelFtl = "model.ftl";
-    private static final String requestFtl = "request.ftl";
-    private static final String responseFtl = "response.ftl";
+    private static final String modelTemplate = "model.ftl";
+    private static final String requestTemplate = "request.ftl";
+    private static final String responseTemplate = "response.ftl";
 
-    private static final String controllerFtl = "controller.ftl";
-    private static final String serviceImplFtl = "serviceImpl.ftl";
-    private static final String serviceFtl = "service.ftl";
+    private static final String controllerTemplate = "controller.ftl";
+    private static final String serviceImplTemplate = "serviceImpl.ftl";
+    private static final String serviceTemplate = "service.ftl";
 
-    private static final String mapperInterfaceFtl = "mapperInterface.ftl";
-    private static final String mapperXmlFtl = "mapperXml.ftl";
+    private static final String mapperInterfaceTemplate = "mapperInterface.ftl";
+    private static final String mapperXmlTemplate = "mapperXml.ftl";
     private static final String JAVA_FILE_SUFFIX = ".java";
 
     /**
@@ -144,59 +150,127 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         arcContext.setAuthor(new ArcCodeGeneratorContext().getAuthor());
 
         // 全局设置 输出文件的根目录
-        String rootNamespace = arcContext.getProjectProperties().getRootNamespace();
-
-
         List<OutTemplateConfig> outTemplateConfigList = new ArrayList<>(16);
 
+        // 一张表生成 一套代码   如何控制需要生成哪些文件???
         for (TableMeta tableMeta : tableMetas) {
-            // 一张表生成 一套代码
-            // model.java
-            // mapper.java
-            // mapper.xml
-            // service.java
-            // serviceImpl.java
-            // controller.java
-            // request.java
-            // response.java
-
-
-            String className = tableMeta.getClassName(arcContext.getRemovePrefix());
-
-            // 一张表 输出一套 代码
-            OutTemplateConfig outTemplateConfig = new OutTemplateConfig();
-
-//            TemplateData dataModel = new TemplateData();
-            // 表名称
-//            dataModel.setTableName(tableMeta.getTableName());
-
-            // 表的注释
-//            dataModel.setTableComment(tableMeta.getTableComment());
-
-//            dataModel.setTableAlias(arcContext.getTableAlias());
-//            dataModel.setJavaPackage(rootNamespace);
-//            dataModel.setRootNamespace(rootNamespace);
-
-
             // 1 data -- 合成模板用的参数  2模板名称 3输出文件名称
-
-            tableMeta.setTableAlias(arcContext.getTableAlias());
-//            tableMeta.setJavaPackage(rootNamespace);
-            tableMeta.setRootNamespace(rootNamespace);
-            tableMeta.setAuthor(arcContext.getAuthor());
-
-
-            outTemplateConfig.setMeta(tableMeta);
-
-
-            outTemplateConfig.setTemplateName("model.ftl");
-            outTemplateConfigList.add(outTemplateConfig);
-
-            // 3 输出文件
-            outTemplateConfig.setOutputFileFullName(output + className + ".java");
+            List<OutTemplateConfig> outputConfigList = built(tableMeta, arcContext);
+            outTemplateConfigList.addAll(outputConfigList);
         }
 
         return outTemplateConfigList;
+    }
+
+    final private List<OutTemplateConfig> built(final TableMeta tableMeta, final ArcPropertiesProvider configContext) {
+        if (tableMeta == null || configContext == null) {
+            throw new RuntimeException("准备输出模板参数时候必要数据为指定");
+            //   String className = tableMeta.getClassName(configContext.getRemovePrefix());
+        }
+
+        // 1 最全的
+        Map<String, String> javaSuffixAndTemplateNameMap = getJavaSuffixAndTemplateNameListByGenerateType(configContext.getGenerateType());
+        // 一张表 输出一套 代码
+        List<OutTemplateConfig> configList = new ArrayList<>();
+
+        final String author = configContext.getAuthor();
+        final String output = configContext.getOutput();
+
+        final String rootNamespace = configContext.getRootNamespace();
+        final String className = tableMeta.getClassName(configContext.getRemovePrefix());
+        for (Map.Entry<String, String> suffixAndTemplateName : javaSuffixAndTemplateNameMap.entrySet()) {
+
+            if (suffixAndTemplateName == null
+                    || suffixAndTemplateName.getKey() == null
+                    || suffixAndTemplateName.getValue() == null) {
+                log.error("错误,准备输出模板参数时,模板名称不可为空,entry=" + JSON.toJSONString(suffixAndTemplateName) + "|configContext={}" + JSON.toJSONString(configContext));
+                continue;
+            }
+
+            OutTemplateConfig outTemplateConfig = new OutTemplateConfig();
+            tableMeta.setTableAlias(configContext.getTableAlias());
+            tableMeta.setAuthor(author);
+            tableMeta.setRootNamespace(rootNamespace);
+
+
+            // mapper 名称
+            tableMeta.setMapperName(getMapperName(configContext.getMapperNamespace(), className));
+
+            // 获取模板
+            outTemplateConfig.setTemplateName(suffixAndTemplateName.getValue());
+            outTemplateConfig.setMeta(tableMeta);
+            outTemplateConfig.setOutputFileFullName(output + className + suffixAndTemplateName.getKey());
+
+            configList.add(outTemplateConfig);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("准备输出模板参数如下:", JSON.toJSONString(configList));
+        }
+        return configList;
+    }
+
+    private String getMapperName(String mapperNamespace, String className) {
+        if (StringUtils.isNotBlank(mapperNamespace)) {
+            return mapperNamespace;
+        }
+        return className + "Mapper";
+    }
+
+    /**
+     * 根据类型配置需要准备的模板
+     *
+     * @param generateType 输出方案类型
+     * @return 模板名称集合
+     */
+    private Map<String, String> getJavaSuffixAndTemplateNameListByGenerateType(int generateType) {
+
+        // 说明 key是Java文件的后缀  value是模板文件全名
+        Map<String, String> javaSuffixAndTemplateName = new HashMap<>();
+        switch (generateType) {
+            // only model
+            case 0:
+                javaSuffixAndTemplateName.put("Model.java", "model.ftl");
+                break;
+            // only xml
+            case 1:
+                javaSuffixAndTemplateName.put("Mapper.xml", "mapperXml.ftl");
+                break;
+            // DAO
+            case 3:
+                javaSuffixAndTemplateName.put("Model.java", "model.ftl");
+                javaSuffixAndTemplateName.put("Mapper.xml", "mapperXml.ftl");
+                break;
+
+            // DAO service
+            case 4:
+                // DAO Service controller
+            case 6:
+                // DAO Service Controller req resp
+            case 8:
+                //21 特殊定制模式 : 如控制输出方法名称
+
+            case 91:
+                javaSuffixAndTemplateName.put("Model.java", "model.ftl");
+                javaSuffixAndTemplateName.put("Mapper.xml", "mapperXml.ftl");
+                javaSuffixAndTemplateName.put("MapperInterface.java", "mapperInterface.ftl");
+                break;
+
+            // default 完整输出模式
+            default:
+
+                javaSuffixAndTemplateName.put("Model.java", "model.ftl");
+                javaSuffixAndTemplateName.put("Mapper.xml", "mapperXml.ftl");
+                javaSuffixAndTemplateName.put("MapperInterface.java", "mapperInterface.ftl");
+
+                javaSuffixAndTemplateName.put("Service.java", "service.ftl");
+                javaSuffixAndTemplateName.put("ServiceImpl.java", "serviceImpl.ftl");
+                javaSuffixAndTemplateName.put("Controller.java", "controller.ftl");
+                javaSuffixAndTemplateName.put("Request.java", "request.ftl");
+                javaSuffixAndTemplateName.put("Response.java", "response.ftl");
+
+        }
+        return javaSuffixAndTemplateName;
     }
 
 
@@ -221,9 +295,9 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
             writer.flush();
         } catch (IOException exception) {
-            log.error("模板合成IO异常,", exception);
+            log.error("ERROR,模板合成IO异常,", exception);
         } catch (TemplateException exception) {
-            log.error("模板合成异常,", exception);
+            log.error("ERROR,模板合成异常,", exception);
         } finally {
             try {
                 if (writer != null) {

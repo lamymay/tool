@@ -1,7 +1,7 @@
 package com.arc.code.generator.service;
 
 import com.arc.code.generator.config.properties.ArcPropertiesProvider;
-import com.arc.code.generator.model.domain.meta.TableMeta;
+import com.arc.code.generator.model.domain.TableMeta;
 
 import java.util.List;
 

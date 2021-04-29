@@ -1,27 +1,29 @@
-package ${javaPackage}.mapper;
+package ${rootNamespace}.mapper;
 
-import ${modelNamespace} .${meta.className} ;
-import com.arc.test.model.request.${meta.className}Request;
+import ${rootNamespace}.${className};
+import com.arc.test.model.request.${className};
 import java.util.List;
-<#if meta.dateTypeExists>
+
+<#if importDate>
 import java.util.Date;
 </#if>
 
+
 /**
-* ${meta.tableComment}服务
+* ${tableComment}服务
 *
 * @author ${author?default("叶超")}
 * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
 */
-public interface ${meta.className}Mapper {
+public interface ${className}Mapper {
 
     /**
     * 保存一条数据并返回数据的主键
     *
-    * @param ${meta.lowerCaseFirstWordClassName} 实体
+    * @param ${lowerCaseFirstWordClassName} 实体
     * @return 主键 PK
     */
-    Long save(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    Long save(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 通过主键删除一条数据
@@ -34,10 +36,10 @@ public interface ${meta.className}Mapper {
     /**
     * 更新一条数据
     *
-    * @param ${meta.lowerCaseFirstWordClassName}
+    * @param ${lowerCaseFirstWordClassName}
     * @return 影响数据条数
     */
-    int update(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    int update(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 通过主键查询一条数据
@@ -45,37 +47,45 @@ public interface ${meta.className}Mapper {
     * @param id 主键
     * @return 返回一条数据
     */
-    ${meta.className} get(Long id);
+    ${className} get(Long id);
 
     /**
     * 无条件查询全部数据
     *
     * @return 全部数据
     */
-    List<${meta.className}> list();
+    List<${className}> list();
 
     /**
     * 条件查询数据列表
     *
     * @return 数据集合
     */
-    List<${meta.className}> list(${meta.className}Request ${meta.lowerCaseFirstWordClassName}Request);
+    List<${className}> list(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 分页条件查询数据列表
     *
-    * @param ${meta.lowerCaseFirstWordClassName}Request
+    * @param ${lowerCaseFirstWordClassName}
     * @return 数据集合
     */
-    List<${meta.className}> listPage(${meta.className}Request ${meta.lowerCaseFirstWordClassName}Request);
+    int countForListPage(${className} ${lowerCaseFirstWordClassName});
+    
+    /**
+    * 分页条件查询数据列表
+    *
+    * @param ${lowerCaseFirstWordClassName}
+    * @return 数据集合
+    */
+    List<${className}> listPage(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 批量插入
     *
-    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
+    * @param ${lowerCaseFirstWordClassName}s 数据集合
     * @return 影响条数
     */
-    Integer saveBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);
+    Integer saveBatch(List<${className}> ${lowerCaseFirstWordClassName}s);
 
     /**
     * 批量删除
@@ -83,14 +93,13 @@ public interface ${meta.className}Mapper {
     * @param ids 主键集合
     * @return 影响条数
     */
-
     Integer deleteIdIn(List<Long> ids);
 
     /**
     * 批量更新
     *
-    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合
+    * @param ${lowerCaseFirstWordClassName}s 数据集合
     * @return 影响条数
     */
-    Integer updateBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);
+    Integer updateBatch(List<${className}> ${lowerCaseFirstWordClassName}s);
 }

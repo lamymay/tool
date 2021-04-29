@@ -61,9 +61,9 @@ public interface ArcPropertiesProvider {
     String getTableAlias();
 
     //项目的一些配置
-    String getProjectRootNamespace();
+    String getRootNamespace();
 
-    String getProjectMapperNamespace();
+    String getMapperNamespace();
 
     String getProjectModelNamespace();
 
@@ -76,21 +76,16 @@ public interface ArcPropertiesProvider {
     String getProjectOutputFolder();
 
     /**
-     * 是否仅仅输出mapper接口与xml
-     * 默认false=即输出：model、mapper、interface、service、controller
-     *
-     * @return 仅仅最小生成, 会输出model&xml&mapper接口
-     */
-    boolean getOnlyModelMapperAndXml();
-
-
-    /**
      * 是否仅仅使用行尾注释而禁止多行注释
      * 默认 false =即输出文件注释规范为：多行注释而非单行注释
      *
      * @return 注释类型
      */
     boolean getOnlyEnableEndOfLineCommentAndDisableMultilineComment();
+
+    Integer getGenerateType();
+
+    void setGenerateType(Integer generateType);
 
     /**
      * 默认输出文件夹
@@ -119,8 +114,8 @@ public interface ArcPropertiesProvider {
 
     //@Override
     default ProjectProperties getProjectProperties() {
-        String rootNamespace = getProjectRootNamespace();
-        String mapperNamespace = getProjectMapperNamespace();
+        String rootNamespace = getRootNamespace();
+        String mapperNamespace = getMapperNamespace();
         String modelNamespace = getProjectModelNamespace();
         String serviceNamespace = getProjectServiceNamespace();
         String serviceImplNamespace = getProjectServiceImplNamespace();
