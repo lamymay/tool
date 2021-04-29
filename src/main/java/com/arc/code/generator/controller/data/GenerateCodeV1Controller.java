@@ -44,7 +44,7 @@ public class GenerateCodeV1Controller {
      * @param parameterMap Map
      */
     @PostMapping(value = "/form")
-    public void testMap2ByForm(@RequestParam Map<String, Object> parameterMap, HttpServletResponse response) throws IOException {
+    public void testMap2ByForm(@RequestParam Map<String, Object> parameterMap, HttpServletResponse response) {
 
         parameterMap.put("mapperNamespace", "com.test");
         parameterMap.put("serviceNamespace", "com.test");
@@ -79,8 +79,7 @@ public class GenerateCodeV1Controller {
         try {
             // 主逻辑
             ArcPropertiesProvider result = freemarkerGeneratorService.processByContext(generatorContext);
-            String output = generatorContext.getOutput();
-
+            log.debug("result={}", JSON.toJSONString(result));
         } catch (Exception exception) {
             String message = "" + exception.getCause() + exception.getCause();
             log.error("error", exception);
@@ -90,7 +89,6 @@ public class GenerateCodeV1Controller {
         }
         return ResponseEntity.ok("success");
     }
-
 
 
     public static void openOutputDir(String outPath) {

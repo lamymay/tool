@@ -7,8 +7,8 @@
 <#assign pkMapperJdbcType = ''>
 <#macro pound>#</#macro>
 <mapper namespace="com.arc.code.generator.mapper.${mapperName}">
-	<resultMap id="${meta.resultMapId}" type="${rootNamespace}.${meta.className}">
-	<#list meta.columns as col>
+	<resultMap id="${className}ResultMap" type="${rootNamespace}.${className}">
+	<#list columns as col>
 		<#if col.columnKey == 'PRI'>
 		<id property="${col.fieldName}" column="${col.columnName}"/>
 		<#assign pkColumnName = col.columnName>
@@ -21,8 +21,8 @@
 	</#list>
 	</resultMap>
 
-	<sql id="sql${meta.className}Columns">
-	<#list meta.columns as col>
+	<sql id="sql${className}AllAllColumns">
+	<#list columns as col>
 		<#if col_has_next>
 		${col.columnName},
 		<#else>
@@ -31,9 +31,9 @@
 	</#list>
 	</sql>
 
-	<insert id="save" parameterType="${rootNamespace}.${meta.className}" useGeneratedKeys="true" keyProperty="${pkFieldName}">
-		INSERT INTO ${meta.tableName} (
-		<#list meta.columns as col>
+	<insert id="save" parameterType="${rootNamespace}.${className}" useGeneratedKeys="true" keyProperty="${pkFieldName}">
+		INSERT INTO ${tableName} (
+		<#list columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'update_time' && col.columnName != 'update_user'>
 		<#if col_has_next>
 			${col.columnName},
@@ -44,7 +44,7 @@
 		</#list>
 		)
         VALUES (
-		<#list meta.columns as col>
+		<#list columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'update_time' && col.columnName != 'update_user'>
 		<#if col_has_next>
 			<@pound></@pound>{${col.fieldName}},
@@ -56,10 +56,10 @@
 		)
 	</insert>
 
-	<update id="update" parameterType="${rootNamespace}.${meta.className}">
-		UPDATE ${meta.tableName}
+	<update id="update" parameterType="${rootNamespace}.${className}">
+		UPDATE ${tableName}
 		<set>
-		<#list meta.columns as col>
+		<#list columns as col>
 		<#if col.columnKey != 'PRI' && col.columnName != 'create_time' && col.columnName != 'create_user'>
 			<if test="${col.fieldName} != null and ${col.fieldName} != ''">, ${col.columnName} = <@pound></@pound>{${col.fieldName}}</if>
 			<if test="${col.fieldName} != null">, ${col.columnName} = <@pound></@pound>{${col.fieldName}}</if>
@@ -69,10 +69,39 @@
 		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName}}
 	</update>
 
-	<select id="get" parameterType="${pkMapperJavaType}" resultMap="${meta.resultMapId}">
-		SELECT <include refid="sql${meta.className}Columns" />
-		FROM ${meta.tableName}
+	<delete id="delete" parameterType="${pkMapperJavaType}">
+		DELETE
+		FROM ${tableName}
 		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName}}
+	</delete>
+
+	<select id="get" parameterType="${pkMapperJavaType}" resultMap="${className}ResultMap">
+		SELECT <include refid="sql${className}AllColumns" />
+		FROM ${tableName}
+		WHERE ${pkColumnName} = <@pound></@pound>{${pkFieldName}}
+	</select>
+
+	<select id="list" parameterType="${pkMapperJavaType}" resultMap="${className}ResultMap">
+		SELECT <include refid="sql${className}AllColumns" />
+		FROM ${tableName}
+	</select>
+
+	<!-- 分页查询用的公共sql-->
+	<sql id="sqlCommonWhere">
+		<where>
+			1 = 1
+		</where>
+	</sql>
+
+	<select id="countForListPage" parameterType="${rootNamespace}.${className}"
+			resultType="int">
+		SELECT count(*) FROM ${tableName}
+		<include refid="sqlCommonWhere"/>
+	</select>
+
+	<select id="listPage" parameterType="${rootNamespace}.${className}" resultMap="${className}ResultMap">
+		SELECT <include refid="sql${className}AllColumns" />
+		FROM ${tableName}
 	</select>
 
 </mapper>
