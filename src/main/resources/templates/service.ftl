@@ -1,27 +1,24 @@
 package ${rootNamespace};
 
 import lombok.extern.slf4j.Slf4j;
-import ${modelNamespace} .${meta.className} ;
-<#--import com.arc.test.model.request.${meta.className}Request;-->
+import ${classFullName.modelNamespace};
 import java.util.List;
-<#if meta.dateTypeExists>
-    import java.util.Date;
-</#if>
+import java.util.Date;
 /**
-* ${meta.tableComment}服务
+* ${tableComment}服务
 *
-* @author ${author?default("叶超")}
-* @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
+* @author ${author?default("")}
+* @since ${(createTime ? string("yyyy-MM-dd HH:mm:ss"))!}
 */
-public interface ${meta.className}Service {
+public interface ${className}Service {
 
     /**
     * 保存一条数据并返回数据的主键
     *
-    * @param ${meta.lowerCaseFirstWordClassName} 实体
+    * @param ${lowerCaseFirstWordClassName} 实体
     * @return 主键 PK
     */
-    Long save(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    Long save(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 通过主键删除一条数据
@@ -34,10 +31,10 @@ public interface ${meta.className}Service {
     /**
     * 更新一条数据
     *
-    * @param ${meta.lowerCaseFirstWordClassName}
+    * @param ${lowerCaseFirstWordClassName}
     * @return 影响数据条数
     */
-    int update(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    int update(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 通过主键查询一条数据
@@ -45,37 +42,37 @@ public interface ${meta.className}Service {
     * @param id 主键
     * @return 返回一条数据
     */
-    ${meta.className} getById(Long id);
+    ${className} getById(Long id);
 
 <#--    /**-->
 <#--    * 无条件查询全部数据-->
 <#--    *-->
 <#--    * @return 全部数据-->
 <#--    */-->
-<#--    List<${meta.className}> list();-->
+<#--    List<${className}> list();-->
 
     /**
     * 条件查询数据列表
-    * @param ${meta.lowerCaseFirstWordClassName}
+    * @param ${lowerCaseFirstWordClassName}
     * @return 数据集合
     */
-    List<${meta.className}> list(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    List<${className}> list(${className} ${lowerCaseFirstWordClassName});
 
     /**
     * 分页条件查询数据列表
     *
-    * @param ${meta.lowerCaseFirstWordClassName}
+    * @param ${lowerCaseFirstWordClassName}
     * @return 数据集合
     */
-    List<${meta.className}> listPage(${meta.className} ${meta.lowerCaseFirstWordClassName});
+    List<${className}> listPage(${className} ${lowerCaseFirstWordClassName});
 
 <#--    /**-->
 <#--    * 批量插入-->
 <#--    *-->
-<#--    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合-->
+<#--    * @param ${lowerCaseFirstWordClassName}s 数据集合-->
 <#--    * @return 影响条数-->
 <#--    */-->
-<#--    Integer saveBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);-->
+<#--    Integer saveBatch(List<${className}> ${lowerCaseFirstWordClassName}s);-->
 
 <#--    /**-->
 <#--    * 批量删除-->
@@ -89,8 +86,8 @@ public interface ${meta.className}Service {
 <#--    /**-->
 <#--    * 批量更新-->
 <#--    *-->
-<#--    * @param ${meta.lowerCaseFirstWordClassName}s 数据集合-->
+<#--    * @param ${lowerCaseFirstWordClassName}s 数据集合-->
 <#--    * @return 影响条数-->
 <#--    */-->
-<#--    Integer updateBatch(List<${meta.className}> ${meta.lowerCaseFirstWordClassName}s);-->
+<#--    Integer updateBatch(List<${className}> ${lowerCaseFirstWordClassName}s);-->
 }

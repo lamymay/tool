@@ -51,19 +51,16 @@ arc.generator.database.tableAlias=app_contact_
 #############################################################
 #   配置参数提示：                     1.3project config
 #rootNamespace=项目基础命名空间【缺省时为：”】
-#modelNamespace=model 的命名空间【缺省时为：】
 #mapperNamespace=mapper 的命名空间【缺省时为：”】
 #serviceNamespace=service 的命名空间【缺省时为：】
 #serviceImplNamespace=serviceImpl 的命名空间   【缺省时为：】
 #controllerNamespace=controller \u7684\u547D\u540D\u7A7A\u95F4       【缺省时为：】
 #onlyModelMapperAndXml=是否仅仅输出接口与，默即输出：、、、  \u662F\u5426\u4EC5\u4EC5\u8F93\u51FAmapper\u63A5\u53E3\u4E0Exml\uFF0C \u9ED8\u8BA4false=\u5373\u8F93\u51FA\uFF1Amodel\u3001mapper\u3001interface\u3001service\u3001controller
 #onlyEnableEndOfLineCommentAndDisableMultilineComment=是否仅仅使用行尾注释而禁止多行注释默认  false =即输出文件注释规范为：多行注释而非单行注释
-#modelNamespace=创建好的文件输出路径【必要】
 #############################################################
 
 
 arc.generator.project.rootNamespace=com.arc
-arc.generator.project.modelNamespace=${arc.generator.project.rootNamespace}.core.model.domain.shop
 arc.generator.project.requestNamespace=${arc.generator.project.rootNamespace}.core.model.request.shop
 arc.generator.project.mapperNamespace=${arc.generator.project.rootNamespace}.zero.mapper.shop
 arc.generator.project.serviceNamespace=${arc.generator.project.rootNamespace}.core.service.shop

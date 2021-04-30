@@ -1,22 +1,19 @@
 package com.arc.code.generator.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.domain.ColumnMeta;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.MetaService;
 import com.arc.code.generator.utils.NameUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.arc.code.generator.model.MockControl.scanAllTable;
+import java.util.*;
 
 /**
  * @author may
@@ -47,62 +44,38 @@ public class MetaServiceImpl implements MetaService {
     public float mysqlVersion = 8.0f;
 
 
-    // todo 通过系统配置在yml或properties文件中的数据源来获取
-    // todo 缓存数据 cacheTableMeta(meta);
-
-//    /**
-//     * 获取表的元数据
-//     *
-//     * @return 表的元数据
-//     */
-//    @Override
-//    public TableMeta selectTableMateByMybatis(ArcPropertiesProvider arcPropertiesProvider) {
-//        TableMeta meta = metaMapper.get(arcPropertiesProvider.getDatabaseProperties().getSchemaName(), arcPropertiesProvider.getDatabaseProperties().getTableName());
-//        if (meta == null) {
-//            throw new IllegalArgumentException("\n失败！发生错误！指定的表不存在，请检查表的名称或数据库是否配置正确！\nFailure! Please check schemaName and tableName are correct. ");
-//        }
-//        return meta;
-//    }
+    /*
+      通过系统配置在yml或properties文件中的数据源来获取
+      是否使用 mybatis来获取, 理由:1非必要并且需要添加依赖 2利用jdbc已经可以满足查询出来了
+    */
 
     @Override
-    public TableMeta selectTableMateOptimization(ArcPropertiesProvider arcPropertiesProvider, boolean useProjectDefaultDataSource) {
-        TableMeta tableMeta = null;
-//        if (useProjectDefaultDataSource) {
-//            tableMeta = selectTableMateByMybatis(arcPropertiesProvider);
-//        } else {
-//            tableMeta = selectTableMateByJDBC(arcPropertiesProvider);
-//        }
-        tableMeta = selectTableMateByJDBC(arcPropertiesProvider);
-
-        return tableMeta;
+    public TableMeta selectTableMateByJDBC(ArcCodeGeneratorContext generatorContext) {
+        Assert.notNull(generatorContext, "获取表元元素异常,连接数据库依赖的配置错或为空!");
+        return selectTableMateByJDBC(generatorContext.getUrl(),
+                generatorContext.getUser(),
+                generatorContext.getPassword(),
+                generatorContext.getDriverClassName(),
+                generatorContext.getSchemaName(),
+                generatorContext.getTableName());
     }
 
     @Override
-    public TableMeta selectTableMateByJDBC(ArcPropertiesProvider propertiesProvider) {
+    public TableMeta selectTableMateByJDBC(String url, String user, String password, String driverClassName,
+                                           String schemaName, String tableName) {
         Connection connection = null;
         //Statement statement = null;
         PreparedStatement preparedStatement = null;
         TableMeta tableMeta = null;
 
         try {
-            String jdbcDriver = propertiesProvider.getDataSourceDriverClassName();
-            String username = propertiesProvider.getDataSourceUsername();
-            String password = propertiesProvider.getDataSourcePassword();
-            String dbUrl = propertiesProvider.getDataSourceUrl();
-
-            String schemaName = propertiesProvider.getSchemaName();
-            String tableName = propertiesProvider.getTableName();
-
-
             // 注册 JDBC 驱动
-            Class.forName(jdbcDriver);
-
+            Class.forName(driverClassName);
             // 打开链接
             log.info("连接数据库....");
-            connection = DriverManager.getConnection(dbUrl, username, password);
+            connection = DriverManager.getConnection(url, user, password);
             // 执行查询
-            System.out.println(" 实例化Statement对象...");
-
+          log.info("JDBC 连接数据OK ...");
             String sql = "select t.table_schema AS TABLE_SCHEMA  ,t.table_name AS TABLE_NAME,t.table_comment AS TABLE_COMMENT, "
 
                     + "c.table_schema AS COL_TABLE_SCHEMA,c.table_name AS COL_TABLE_NAME,c.column_name AS COL_COLUMN_NAME, "
@@ -189,11 +162,15 @@ public class MetaServiceImpl implements MetaService {
         } finally {
             // 关闭资源
             try {
-                if (preparedStatement != null) preparedStatement.close();
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
             } catch (SQLException se2) {
             }// 什么都不做
             try {
-                if (connection != null) connection.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException se) {
                 se.printStackTrace();
             }
@@ -202,43 +179,209 @@ public class MetaServiceImpl implements MetaService {
         return tableMeta;
     }
 
-    public static void main(String[] args) {
-        ArcCodeGeneratorContext propertiesProvider = new ArcCodeGeneratorContext();
 
-        propertiesProvider.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        propertiesProvider.setUrl("jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8");
-        propertiesProvider.setUsername("root");
-        propertiesProvider.setPassword("admin");
+    @Override
+    public List<TableMeta> selectListOptimization(ArcCodeGeneratorContext generatorContext) {
+        List<TableMeta> tableMateList = new ArrayList<>();
 
-        propertiesProvider.setSchemaName("test");
-        propertiesProvider.setTableName("role");
+        if (StringUtils.isBlank(generatorContext.getTableName())) {
+            // 查整个库的
+            List<TableMeta> tableMetaList = selectTableMateByJDBC(generatorContext.getUrl(),
+                    generatorContext.getUser(),
+                    generatorContext.getPassword(),
+                    generatorContext.getDriverClassName(),
+                    generatorContext.getSchemaName());
 
-        TableMeta tableMeta = new MetaServiceImpl().selectTableMateByJDBC(propertiesProvider);
+            tableMateList.addAll(tableMetaList);
+            return tableMetaList;
+        }
+
+        TableMeta tableMeta = selectTableMateByJDBC(generatorContext.getUrl(),
+                generatorContext.getUser(),
+                generatorContext.getPassword(),
+                generatorContext.getDriverClassName(),
+                generatorContext.getSchemaName(),
+                generatorContext.getTableName());
+
+        tableMateList.add(tableMeta);
+        return tableMateList;
+    }
+
+    /**
+     * 查整个db中模型
+     */
+    static String select_all_sql = "select t.table_schema AS TABLE_SCHEMA  ,t.table_name AS TABLE_NAME,t.table_comment AS TABLE_COMMENT, "
+
+            + "c.table_schema AS COL_TABLE_SCHEMA,c.table_name AS COL_TABLE_NAME,c.column_name AS COL_COLUMN_NAME, "
+            + "c.column_key AS COL_COLUMN_KEY,c.data_type AS COL_DATA_TYPE,c.column_comment AS COL_COLUMN_COMMENT, "
+            + "c.ordinal_position AS COL_ORDINAL_POSITION,c.column_default AS COL_COLUMN_DEFAULT,c.is_nullable AS COL_IS_NULLABLE "
 
 
-        System.out.println(tableMeta);
-        System.out.println(JSON.toJSONString(propertiesProvider));
-        System.out.println(JSON.toJSONString(tableMeta));
+            + "from information_schema.`tables` AS t "
+            + "inner join information_schema.columns AS c ON t.table_schema = c.table_schema and t.table_name = c.table_name "
+            + "where t.table_schema = ?  ";
 
+    /**
+     * 查整个db中模型
+     *
+     * @param url
+     * @param user
+     * @param password
+     * @param driverClassName
+     * @param schemaName
+     * @return
+     */
+    private List<TableMeta> selectTableMateByJDBC(String url, String user, String password, String driverClassName, String schemaName) {
 
+        // key 是表名称 value是模型
+        Map<String, TableMeta> tempMap = new HashMap<>(16);
+        Connection connection = null;
+        //Statement statement = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+
+            // 注册 JDBC 驱动
+            Class.forName(driverClassName);
+
+            // 打开链接
+            log.info("连接数据库....");
+            connection = DriverManager.getConnection(url, user, password);
+            log.info("连接数据库....");
+
+            // 执行查询
+            preparedStatement = connection.prepareStatement(select_all_sql);
+            log.debug("查整个db中模型,sql:\n{},参数:{}", select_all_sql, schemaName);
+            preparedStatement.setString(1, schemaName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // 展开结果集数据库
+            List<ColumnMeta> columns = new LinkedList<>();
+            while (resultSet.next()) {
+                String table_schema = resultSet.getString("TABLE_SCHEMA");// 库
+                String table_name = resultSet.getString("TABLE_NAME");//表名称
+                String col_table_name = resultSet.getString("COL_TABLE_NAME");//表名称
+
+                String col_table_schema = resultSet.getString("COL_TABLE_SCHEMA");
+                String col_column_name = resultSet.getString("COL_COLUMN_NAME");
+
+                String col_column_key = resultSet.getString("COL_COLUMN_KEY");
+                String col_data_type = resultSet.getString("COL_DATA_TYPE");
+                String col_column_comment = resultSet.getString("COL_COLUMN_COMMENT");
+
+                int col_ordinal_position = resultSet.getInt("COL_ORDINAL_POSITION");
+                String col_column_default = resultSet.getString("COL_COLUMN_DEFAULT");
+                String col_is_nullable = resultSet.getString("COL_IS_NULLABLE");
+
+                ColumnMeta columnMeta = new ColumnMeta();
+                columnMeta.setColumnName(col_column_name);
+                columnMeta.setTableSchema(table_schema);
+                columnMeta.setTableName(col_table_name);
+
+                columnMeta.setColumnKey(col_column_key);
+                columnMeta.setDataType(col_data_type);
+                columnMeta.setColumnComment(col_column_comment);
+
+                columnMeta.setOrdinalPosition(col_ordinal_position);
+                columnMeta.setColumnDefault(col_column_default);
+                columnMeta.setIsNullable(col_is_nullable);
+
+                // 输出数据
+                columns.add(columnMeta);
+                TableMeta table = tempMap.get(table_name);
+                if (table == null) {
+                    table = new TableMeta();
+                }
+
+                table.setColumns(columns);
+                table.setTableComment(resultSet.getString("TABLE_COMMENT"));// 表注释
+                table.setTableSchema(table_schema);
+                // 转换为驼峰
+                if (table_name != null) {
+//                    NameUtil.upperCaseFirstWord()
+                    String[] arr = table_name.split("_");
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : arr) {
+                        sb.append(NameUtil.upperCaseFirstWord(s));
+                    }
+                    table.setTableName(sb.toString());
+                }
+                tempMap.put(table_name, table);
+            }
+
+            // 完成后关闭
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException exception) {
+            // 处理 JDBC 错误
+            log.error("ERROR", exception);
+        } catch (Exception exception) {
+            // 处理 Class.forName 错误
+            log.error("ERROR", exception);
+        } finally {
+            // 关闭资源
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException se2) {
+            }// 什么都不做
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        log.info("jdbc 结束={}",tempMap.size());
+        return new ArrayList<>(tempMap.values());
     }
 
 
     @Override
-    public List<TableMeta> selectTableMateListOptimization(ArcPropertiesProvider arcPropertiesProvider, boolean useProjectDefaultDataSource) {
-        List<TableMeta> tableMateList = new ArrayList<>();
-
-        if (scanAllTable) {
-            //if(arcPropertiesProvider.isScanAllTable()){
-            // todo 查整个库的
-
+    public List<TableMeta> listTableMateListBySQLStringList(List<String> createTableSQLList) {
+        Assert.notNull(createTableSQLList, "获取表元元素异常,建表语句为空!");
+        List<TableMeta> resp = new ArrayList<>(16);
+        for (String sqlString : createTableSQLList) {
+            resp.add(getTableMateBySQLString(sqlString));
         }
-
-        tableMateList.add(selectTableMateOptimization(arcPropertiesProvider, useProjectDefaultDataSource));
-        return tableMateList;
-
+        return resp;
     }
 
+    @Override
+    public List<TableMeta> listTableMateListBySQLsString(String createTableSQLStrings) {
+        Assert.notNull(createTableSQLStrings, "获取表元元素异常,建表语句为空(注意多sql时用英文分号分隔)!");
+        String[] sqlStrings = createTableSQLStrings.split(";");
+        Assert.notNull(sqlStrings, "获取表元元素异常,建表语句为空(注意多sql时用英文分号分隔)!");
+        List<TableMeta> resp = new ArrayList<>(16);
+        for (String sqlString : sqlStrings) {
+            resp.add(getTableMateBySQLString(sqlString));
+        }
+        return resp;
+    }
+
+    @Override
+    public TableMeta getTableMateBySQLString(String sqlString) {
+        Assert.notNull(sqlString, "获取表元元素异常,建表语句为空!");
+        // todo 解析sql到model
+        return null;
+    }
+
+
+    public static void main(String[] args) {
+
+        String url = "jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8";
+        String user = "root";
+        String password = "admin";
+        String driverClassName = "com.mysql.cj.jdbc.Driver";
+        String schemaName = "test";
+        String tableName = "role";
+        TableMeta tableMeta = new MetaServiceImpl().selectTableMateByJDBC(url, user, password, driverClassName, schemaName, tableName);
+        log.info("表解析出的元元素={}", JSON.toJSONString(tableMeta));
+    }
 
     //            String jdbcDriver = (String) parameterMap.get("driverClassName");
 //            String username = (String) parameterMap.get("username");

@@ -7,7 +7,7 @@ package com.arc.code.generator.model;
 public class MockControl {
 
     public static boolean scanAllTable = false;
-    public static String templateName = "model.ftl";
+
 
     /**
      * 默认输出文件地址

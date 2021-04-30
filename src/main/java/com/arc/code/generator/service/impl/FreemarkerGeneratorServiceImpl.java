@@ -1,13 +1,12 @@
 package com.arc.code.generator.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
+import com.arc.code.generator.model.ClassFullName;
 import com.arc.code.generator.model.OutTemplateConfig;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.MetaService;
-import com.arc.code.generator.utils.JacksonUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -89,7 +88,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
 
     @Override
-    public ArcPropertiesProvider processByContext(ArcPropertiesProvider arcContext) {
+    public ArcCodeGeneratorContext processByContext(ArcCodeGeneratorContext arcContext) {
 
         // 1 参数校验与 元数据准备 --参数校验2-- 补充一些必要参数
         List<OutTemplateConfig> outTemplateConfigList = verifyAndPrepare(arcContext);
@@ -112,18 +111,6 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         return arcContext;
     }
 
-    private static final String modelTemplate = "model.ftl";
-    private static final String requestTemplate = "request.ftl";
-    private static final String responseTemplate = "response.ftl";
-
-    private static final String controllerTemplate = "controller.ftl";
-    private static final String serviceImplTemplate = "serviceImpl.ftl";
-    private static final String serviceTemplate = "service.ftl";
-
-    private static final String mapperInterfaceTemplate = "mapperInterface.ftl";
-    private static final String mapperXmlTemplate = "mapperXml.ftl";
-    private static final String JAVA_FILE_SUFFIX = ".java";
-
     /**
      * 1参数校验 2参数准备
      * 把从 配置参数转换为 可以直接输出的数据
@@ -131,12 +118,11 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
      * @param arcContext ArcPropertiesProvider
      * @return Map
      */
-    private List<OutTemplateConfig> verifyAndPrepare(ArcPropertiesProvider arcContext) {
+    private List<OutTemplateConfig> verifyAndPrepare(ArcCodeGeneratorContext arcContext) {
         Assert.notNull(arcContext, "配置参数不能缺省");
 
-
         // 获取表格数据 组装输出配置
-        List<TableMeta> tableMetas = metaService.selectTableMateListOptimization(arcContext, arcContext.isUseProjectDefaultDataSource());
+        List<TableMeta> tableMetas = metaService.selectListOptimization(arcContext);
         Assert.notNull(arcContext, "数据表的元数据获取失败");
 
         // 全局设置 输出文件路径处理
@@ -147,7 +133,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         }
 
         // 全局设置 文件的作者
-        arcContext.setAuthor(new ArcCodeGeneratorContext().getAuthor());
+        //arcContext.setAuthor(new com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext().getAuthor());
 
         // 全局设置 输出文件的根目录
         List<OutTemplateConfig> outTemplateConfigList = new ArrayList<>(16);
@@ -155,14 +141,14 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         // 一张表生成 一套代码   如何控制需要生成哪些文件???
         for (TableMeta tableMeta : tableMetas) {
             // 1 data -- 合成模板用的参数  2模板名称 3输出文件名称
-            List<OutTemplateConfig> outputConfigList = built(tableMeta, arcContext);
+            List<OutTemplateConfig> outputConfigList = builtConfigs(tableMeta, arcContext);
             outTemplateConfigList.addAll(outputConfigList);
         }
 
         return outTemplateConfigList;
     }
 
-    final private List<OutTemplateConfig> built(final TableMeta tableMeta, final ArcPropertiesProvider configContext) {
+    final private List<OutTemplateConfig> builtConfigs(final TableMeta tableMeta, final ArcCodeGeneratorContext configContext) {
         if (tableMeta == null || configContext == null) {
             throw new RuntimeException("准备输出模板参数时候必要数据为指定");
             //   String className = tableMeta.getClassName(configContext.getRemovePrefix());
@@ -176,7 +162,6 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         final String author = configContext.getAuthor();
         final String output = configContext.getOutput();
 
-        final String rootNamespace = configContext.getRootNamespace();
         final String className = tableMeta.getClassName(configContext.getRemovePrefix());
         for (Map.Entry<String, String> suffixAndTemplateName : javaSuffixAndTemplateNameMap.entrySet()) {
 
@@ -190,11 +175,15 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             OutTemplateConfig outTemplateConfig = new OutTemplateConfig();
             tableMeta.setTableAlias(configContext.getTableAlias());
             tableMeta.setAuthor(author);
-            tableMeta.setRootNamespace(rootNamespace);
 
+            // 设置根路径
+            tableMeta.setRootNamespace(configContext.getRootNamespace());
+            ClassFullName classFullName = new ClassFullName(className,configContext);
+
+            tableMeta.setClassFullName(classFullName);
 
             // mapper 名称
-            tableMeta.setMapperName(getMapperName(configContext.getMapperNamespace(), className));
+            tableMeta.setMapperName(getMapperNamespace(configContext, className));
 
             // 获取模板
             outTemplateConfig.setTemplateName(suffixAndTemplateName.getValue());
@@ -205,17 +194,22 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("准备输出模板参数如下:", JSON.toJSONString(configList));
+            //log.debug("准备输出模板参数如下:", JSON.toJSONString(configList));
         }
         return configList;
     }
 
-    private String getMapperName(String mapperNamespace, String className) {
-        if (StringUtils.isNotBlank(mapperNamespace)) {
-            return mapperNamespace;
+    private String getMapperNamespace(ArcCodeGeneratorContext configContext, String className) {
+        if (configContext != null && configContext.getClassFullName() != null
+                && StringUtils.isNotBlank(configContext.getClassFullName().getMapperNamespace())) {
+            return configContext.getClassFullName().getMapperNamespace().trim();
         }
-        return className + "Mapper";
+        if (configContext != null && StringUtils.isNotBlank(configContext.getRootNamespace())) {
+            return configContext.getRootNamespace() + className;
+        }
+        throw new RuntimeException("参数配置错误,mapper接口名称没有指定");
     }
+
 
     /**
      * 根据类型配置需要准备的模板
@@ -254,6 +248,13 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
                 javaSuffixAndTemplateName.put("Model.java", "model.ftl");
                 javaSuffixAndTemplateName.put("Mapper.xml", "mapperXml.ftl");
                 javaSuffixAndTemplateName.put("MapperInterface.java", "mapperInterface.ftl");
+
+                javaSuffixAndTemplateName.put("Service.java", "service.ftl");
+                javaSuffixAndTemplateName.put("ServiceImpl.java", "serviceImpl.ftl");
+                javaSuffixAndTemplateName.put("Controller.java", "controller.ftl");
+                javaSuffixAndTemplateName.put("Request.java", "request.ftl");
+                javaSuffixAndTemplateName.put("Response.java", "response.ftl");
+
                 break;
 
             // default 完整输出模式
@@ -275,7 +276,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
 
     public OutTemplateConfig process(OutTemplateConfig outTemplateConfig) {
-        log.debug("模板合成,参数OutTemplateConfig={}", JacksonUtils.toJson(outTemplateConfig));
+        //log.debug("模板合成,参数OutTemplateConfig={}", JacksonUtils.toJson(outTemplateConfig));
         Assert.notNull(outTemplateConfig, "模板合成错误,原因:模板配置为空");
 
         TableMeta data = outTemplateConfig.getMeta();

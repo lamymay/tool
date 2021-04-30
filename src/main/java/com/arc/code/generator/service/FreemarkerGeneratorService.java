@@ -1,6 +1,7 @@
 package com.arc.code.generator.service;
 
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
+
+import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 
 /**
  * 创建代码的服务
@@ -16,7 +17,7 @@ public interface FreemarkerGeneratorService {
      * @param propertiesProvider 上下文配置
      * @return ArcPropertiesProvider
      */
-    ArcPropertiesProvider processByContext(ArcPropertiesProvider propertiesProvider);
+    ArcCodeGeneratorContext processByContext(ArcCodeGeneratorContext propertiesProvider);
 
 
 }

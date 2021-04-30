@@ -1,7 +1,6 @@
 package com.arc.code.generator.test;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.config.template.ArcTemplateConfiguration;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
@@ -15,8 +14,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-
-import static com.arc.code.generator.controller.data.GenerateCodeV1Controller.openOutputDir;
 
 
 /**
@@ -33,7 +30,7 @@ public class LaunchGeneratorOverSpringContainerMain {
     private static final Logger log = LoggerFactory.getLogger(LaunchGeneratorOverSpringContainerMain.class);
 
     //@SuppressWarnings("resource")
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         crete1();
     }
@@ -50,24 +47,35 @@ public class LaunchGeneratorOverSpringContainerMain {
         ArcTemplateConfiguration arcTemplateConfiguration = context.getBean(ArcTemplateConfiguration.class);
         Configuration configuration = context.getBean(Configuration.class);
 
+        log.debug("arcTemplateConfiguration={}", arcTemplateConfiguration);
+        log.debug("configuration={}", configuration);
 
         long t2 = System.currentTimeMillis();
         log.info("Spring容器环境配置耗时{}ms", (t2 - t1));
 
         //  1、获取配置参数
-        ArcPropertiesProvider propertiesProvider = getArcPropertiesProvider();
+        ArcCodeGeneratorContext configContext = getArcPropertiesProvider();
 
         //  2、从Spring容器中获取生成工具bean   (干掉 mybatis 转而使用jdbc!)
         FreemarkerGeneratorService generatorService = context.getBean(FreemarkerGeneratorService.class);
 
         // 3、输出文件到文件夹
-        ArcPropertiesProvider produceResult = generatorService.processByContext(propertiesProvider);
+        ArcCodeGeneratorContext produceResult = generatorService.processByContext(configContext);
 
 
         long t3 = System.currentTimeMillis();
         log.info("生成过程耗时{}ms", (t3 - t2));
 
         log.warn("代码生成结果：{}", JSON.toJSONString(produceResult));
+        // 记录结果
+        String output = configContext.getOutput();
+
+        boolean success = configContext.isSuccess();
+        log.info("输出目录={}    \n生成结果={}", output, (success ? "成功" : "失败"));
+
+        // 文件输出zip
+        //        ZipFileUtil.outputFilesZip(output);
+
         //3、结果输出
         try {
             File file = new File(produceResult.getOutput());
@@ -78,62 +86,13 @@ public class LaunchGeneratorOverSpringContainerMain {
         }
     }
 
-    private static void creteBackup() {
-        long t1 = System.currentTimeMillis();
-        //0、Spring容器环境配置
-        //todo  仅仅使用数据自动装配【EnableArcCorePropertiesConfig】启动spring容器或者自动配置的方式是null
 
-
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-//                EnableArcCorePropertiesConfig.class,
-                //ArcPropertiesProviderImpl1.class,
-//                ArcCodeGeneratorPropertiesProvider.class,
-
-//                DataSourceConfig.class,
-//                MybatisConfiguration.class,
-//                ArcTemplateConfiguration.class
-                MetaServiceImpl.class,
-                FreemarkerGeneratorServiceImpl.class
-
-        );
-
-//        context.register(MetaMapper.class);
-
-//        String resource = "MetaMapper.xml";
-//        Reader reader = Resources.getResourceAsReader(resource);
-//        SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-//        SqlSessionFactory factory = builder.build(reader);
-//        SqlSession session = factory.openSession();
-//        MetaMapper user = session.selectOne(
-//                "com.liangjidong.mapper.UserMapper.selectById", 1);
-//        System.out.println(user);
-
-
-        long t2 = System.currentTimeMillis();
-        log.info("Spring容器环境配置耗时{}ms", (t2 - t1));
-
-        //  1、从Spring容器中获取生成工具bean    2、调用执行方法，产生需要的文件
-        // todo 干掉 mybatis 转而使用jdbc!
-        FreemarkerGeneratorService generatorService = context.getBean(FreemarkerGeneratorService.class);
-
-        ArcPropertiesProvider propertiesProvider = getArcPropertiesProvider();
-        ArcPropertiesProvider produceResult = generatorService.processByContext(propertiesProvider);
-
-
-        long t3 = System.currentTimeMillis();
-        log.info("生成过程耗时{}ms", (t3 - t2));
-
-        log.warn("代码生成结果：{}", JSON.toJSONString(produceResult));
-        //3、结果输出
-        openOutputDir(produceResult.getOutput());
-    }
-
-    private static ArcPropertiesProvider getArcPropertiesProvider() {
+    private static ArcCodeGeneratorContext getArcPropertiesProvider() {
 
         // 参数配置
-        ArcCodeGeneratorContext configContext = new ArcCodeGeneratorContext();
+        com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext configContext = new com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext();
         configContext.setUrl("jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8");
-        configContext.setUsername("root");
+        configContext.setUser("root");
         configContext.setPassword("admin");
         configContext.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
@@ -141,8 +100,8 @@ public class LaunchGeneratorOverSpringContainerMain {
         configContext.setGenerateType(91);
 
         configContext.setSchemaName("test");
-        configContext.setTableName("click");
-        configContext.setTableAlias("click");
+//        configContext.setTableName("click");
+//        configContext.setTableAlias("click");
 
         configContext.setAuthor("叶超");
         configContext.setRootNamespace("com.demo");
@@ -154,6 +113,7 @@ public class LaunchGeneratorOverSpringContainerMain {
         //        configContext.setControllerNamespace("com.demo.service.impl");
 
         configContext.setOutput("D:\\free");
+
 
         System.out.println(JSON.toJSONString(configContext));
         return configContext;

@@ -1,5 +1,6 @@
 package com.arc.code.generator.utils;
 
+import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
@@ -65,17 +66,84 @@ public class NameUtil {
         return StringUtils.capitalize(result);
     }
 
+    /**
+     * 字符串去除指定前缀后转驼峰
+     * 字符串去除下划线并将字符串后的第一个字符转大写,忽略第一个字符
+     *
+     * @param source       源字符串
+     * @param removePrefix 需要去除的前缀
+     * @return
+     */
+    public static String replaceUnderLineAsHumpAndLowerCaseFirstWord(@Nullable String source, @Nullable String removePrefix) {
+        if (source == null) {
+            return source;
+        }
+        if (removePrefix != null) {
+            if (source.startsWith(removePrefix)) {
+                source = source.substring(removePrefix.length());
+            }
+        }
+        String[] names = source.split("_");
+        StringBuilder sb = new StringBuilder(16);
+        int length = names.length;
+
+        for (int i = 0; i < length; i++) {
+            String name = names[i];
+            if (i == 0) {
+                if (!"".equals(name.trim())) {
+                    sb.append(NameUtil.lowerCaseFirstWord(name));
+                }
+                continue;
+            }
+            sb.append(NameUtil.upperCaseFirstWord(name));
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * 字符串去除指定前缀后转驼峰
+     * 字符串去除下划线并将字符串后的第一个字符转大写
+     *
+     * @param source       源字符串
+     * @param removePrefix 需要去除的前缀
+     * @return
+     */
+    public static String replaceUnderLineAsHump(@Nullable String source, @Nullable String removePrefix) {
+        if (source == null) {
+            return source;
+        }
+        if (removePrefix != null) {
+            if (source.startsWith(removePrefix)) {
+                source = source.substring(removePrefix.length());
+            }
+        }
+        String[] names = source.split("_");
+        StringBuilder sb = new StringBuilder(16);
+        for (String word : names) {
+            sb.append(NameUtil.upperCaseFirstWord(word));
+        }
+        return sb.toString();
+    }
+
 
     //for test
     public static void main(String[] args) throws FileNotFoundException {
-        System.out.println(replaceUnderLineAndUpperCase("abc"));
-        System.out.println(replaceUnderLineAndUpperCase("_abc"));
-        System.out.println(replaceUnderLineAndUpperCase("__abc"));
-        System.out.println("--------------");
-        System.out.println(replaceUnderLineAndUpperCase("ABC"));
-        System.out.println(replaceUnderLineAndUpperCase("t_abc"));
-        System.out.println(replaceUnderLineAndUpperCase("sys_abc"));
-        System.out.println(replaceUnderLineAndUpperCase("sys_abc"));
+//        System.out.println(replaceUnderLineAndUpperCase("abc"));
+//        System.out.println(replaceUnderLineAndUpperCase("_abc"));
+//        System.out.println(replaceUnderLineAndUpperCase("__abc"));
+//        System.out.println("--------------");
+//        // 去掉下划线首字母大写
+//        System.out.println(replaceUnderLineAndUpperCase("ABC"));
+//        System.out.println(replaceUnderLineAndUpperCase("t_abc"));
+//        System.out.println(replaceUnderLineAndUpperCase("sys_abc"));
+//        System.out.println(replaceUnderLineAndUpperCase("sys_abc"));
+
+
+        System.out.println(replaceUnderLineAsHumpAndLowerCaseFirstWord("sys_abc", "sys"));
+        System.out.println(replaceUnderLineAsHumpAndLowerCaseFirstWord("sys_abc", null));
+//        System.out.println(replaceUnderLineAsHumpAndLowerCaseFirstWord("_abc", null));
+
 
 //        createFile();
     }

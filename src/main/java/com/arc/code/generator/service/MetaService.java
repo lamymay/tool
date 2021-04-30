@@ -1,6 +1,6 @@
 package com.arc.code.generator.service;
 
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
+import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.domain.TableMeta;
 
 import java.util.List;
@@ -14,24 +14,59 @@ import java.util.List;
 public interface MetaService {
 
     /**
-     * 获取表的元数据
+     * 从db中获取表元元素模型
      *
-     * @param arcPropertiesProvider       代码生成器环境上下文
-     * @param useProjectDefaultDataSource 是否使用默认数据源
-     * @return
+     * @param url             url
+     * @param user            user
+     * @param password        password
+     * @param driverClassName driverClassName
+     * @param schemaName      库名称
+     * @param tableName       表名称
+     * @return 表模型
      */
-    TableMeta selectTableMateOptimization(ArcPropertiesProvider arcPropertiesProvider, boolean useProjectDefaultDataSource);
+    TableMeta selectTableMateByJDBC(String url, String user, String password, String driverClassName,
+                                    String schemaName, String tableName);
 
     /**
-     * 查一个库中的全部表并解析出来
+     * 从db中获取表元元素模型
      *
-     * @param arcPropertiesProvider       ArcPropertiesProvider
-     * @param useProjectDefaultDataSource useProjectDefaultDataSource
+     * @param generatorContext 代码生成器环境上下文
+     * @return 表模型
+     */
+    TableMeta selectTableMateByJDBC(ArcCodeGeneratorContext generatorContext);
+
+    /**
+     * 从db中获取表的元数据 [全表的]
+     *
+     * @param generatorContext 代码生成器环境上下文
      * @return List
      */
-    List<TableMeta> selectTableMateListOptimization(ArcPropertiesProvider arcPropertiesProvider, boolean useProjectDefaultDataSource);
+    List<TableMeta> selectListOptimization(ArcCodeGeneratorContext generatorContext);
 
-//    TableMeta selectTableMateByMybatis(ArcPropertiesProvider arcPropertiesProvider);
 
-    TableMeta selectTableMateByJDBC(ArcPropertiesProvider propertiesProvider);
+    /**
+     * 通过一批sql构造一批表元元素模型
+     *
+     * @param createTableSQLList 建表SQL的List
+     * @return 表的模型
+     */
+    List<TableMeta> listTableMateListBySQLStringList(List<String> createTableSQLList);
+
+    /**
+     * 通过一批sql构造一批表的模型
+     *
+     * @param createTableSQLStrings 建表SQL,多个建表SLQ时候采用以英文分号分隔
+     * @return 表的模型
+     */
+    List<TableMeta> listTableMateListBySQLsString(String createTableSQLStrings);
+
+    /**
+     * 通过建表SQL构造一个表的模型
+     *
+     * @param sql 建表SQL
+     * @return 表元数据
+     */
+    TableMeta getTableMateBySQLString(String sql);
+
+
 }

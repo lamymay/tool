@@ -1,0 +1,7 @@
+
+
+ebug - 【货主订单操作6001611112104291943479427下发】 - ==> Parameters: 6001611112104291943479427(String)
+2021-04-29 19:43:22.956 DEBUG ConsumeMessageThread_1 com.tf56.oms.owner.mapper.OwnerOrderLogisticsMapper.getByOwnerOrderCode.debug - 【货主订单操作6001611112104291943479427下发】 - <==      Total: 1
+2021-04-29 19:43:22.961 INFO  ConsumeMessageThread_1 com.tf56.oms.owner.service.impl.OwnerOrderOperateServiceImpl.operate - 【货主订单操作6001611112104291943479427下发】 - 查询货主订单信息，结果{"R":{"ownerOrderDTO":{"id":765,"ownerOrderCode":"6001611112104291943479427","isDeleted":false,"gmtCreate":"2021-04-29 19:43:22","createOperator":"王勇俊","createOperatorId":1888363,"gmtModified":"2021-04-29 19:43:22","modifyOperatorId":1888363,"modifyOperator":"王勇俊","appCode":"owner","status":"已开单","shipperId":1888363,"goodsName":"测试","goodsAmount":1.00,"goodsWeight":1.00,"goodsUnit":"件","supportService":1,"supportServiceList":["物流"],"sender":"测试","senderPhone":"13666621484","receiver":"测试","receiverPhone":"13666621484","pageNo":1,"pageSize":20},"ownerOrderLogisticsDTO":{"id":189,"isDeleted":false,"gmtCreate":"2021-04-29 19:43:22","createOperator":"王勇俊","createOperatorId":1888363,"gmtModified":"2021-04-29 19:43:22","modifyOperatorId":1888363,"modifyOperator":"王勇俊","ownerOrderCode":"6001611112104291943479427","receiptType":"原单返回","receiptNum":1,"paymentMode":"现付","carrierId":1888363,"carrier":"长革-测试","shipperId":1888363,"shipper":"王勇俊"}}}
+
+

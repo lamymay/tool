@@ -1,24 +1,22 @@
 package ${rootNamespace};
 
-<#if meta.dateTypeExists>
 import java.util.Date;
-</#if>
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * ${meta.tableComment}
+ * ${tableComment}
  *
- * @author ${author?default("叶超")}
+ * @author ${author?default("may")}
  * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
  */
 @Getter
 @Setter
-public class ${meta.className}Response {
+public class ${className}Response implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-<#list meta.columns as col>
+<#list columns as col>
 	private ${col.modelFieldType} ${col.fieldName};// ${col.columnComment}
 </#list>
 }

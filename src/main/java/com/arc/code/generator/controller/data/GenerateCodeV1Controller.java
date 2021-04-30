@@ -1,7 +1,6 @@
 package com.arc.code.generator.controller.data;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.utils.ZipFileUtil;
@@ -50,8 +49,8 @@ public class GenerateCodeV1Controller {
         parameterMap.put("serviceNamespace", "com.test");
         //1、创建文件
 
-        ArcCodeGeneratorContext codeGeneratorContext = JSON.parseObject(JSON.toJSONString(parameterMap), ArcCodeGeneratorContext.class);
-        ArcPropertiesProvider propertiesProvider = freemarkerGeneratorService.processByContext(codeGeneratorContext);
+        com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext codeGeneratorContext = JSON.parseObject(JSON.toJSONString(parameterMap), com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.class);
+        ArcCodeGeneratorContext propertiesProvider = freemarkerGeneratorService.processByContext(codeGeneratorContext);
 
         //2、记录结果
         boolean success = propertiesProvider.isSuccess();
@@ -75,10 +74,10 @@ public class GenerateCodeV1Controller {
      * @return ResponseEntity
      */
     @PostMapping(value = "/jdbc")
-    public ResponseEntity fixed(@RequestBody ArcCodeGeneratorContext generatorContext) {
+    public ResponseEntity fixed(@RequestBody com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext generatorContext) {
         try {
             // 主逻辑
-            ArcPropertiesProvider result = freemarkerGeneratorService.processByContext(generatorContext);
+            ArcCodeGeneratorContext result = freemarkerGeneratorService.processByContext(generatorContext);
             log.debug("result={}", JSON.toJSONString(result));
         } catch (Exception exception) {
             String message = "" + exception.getCause() + exception.getCause();
@@ -109,8 +108,6 @@ public class GenerateCodeV1Controller {
 //     * @param tableName
 //     * @param tableAlias
 //     * @param rootNamespace
-//     * @param mapperNamespace
-//     * @param modelNamespace
 //     * @param output
 //     * @return
 //     */
@@ -121,8 +118,6 @@ public class GenerateCodeV1Controller {
 //            @RequestParam(required = true) String tableName,
 //            @RequestParam(required = true) String tableAlias,
 //            @RequestParam(required = true) String rootNamespace,
-//            @RequestParam(required = true) String mapperNamespace,
-//            @RequestParam(required = true) String modelNamespace,
 //            @RequestParam(required = true) String output
 //    ) {
 //        Map<String, Object> result = new HashMap<>();

@@ -1,6 +1,5 @@
 package com.arc.code.generator.utils;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +34,7 @@ public class ZipFileUtil {
         if (listOfFiles == null || listOfFiles.length < 1) {
             return fileList;
         }
-        if (listOfFiles != null && listOfFiles.length > 0) {
+        if (listOfFiles.length > 0) {
             fileList = new LinkedList<>();
         }
         for (File file : listOfFiles) {
@@ -50,10 +49,6 @@ public class ZipFileUtil {
         if (outputParameter == null || outputParameter.trim().length() == 0 || "".equals(outputParameter.trim())) {
             outputParameter = "/output";
         }
-
-        System.out.println(outputParameter);
-        System.out.println(outputParameter);
-
 
         log.debug("参数 outputParameter={}", outputParameter);
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -160,6 +155,73 @@ public class ZipFileUtil {
             boolean delete = zipFile.delete();
             String success = delete ? "成功" : "失败";
             log.warn("清理临时文件异常，zip下载路径：" + zipPath + "删除文件" + success);
+        }
+    }
+
+    public static void outputFilesZip(@NotNull String output) {
+        //获得要下载的文件名
+        String fileRootPath = output;
+        String zipName = System.currentTimeMillis() + ".zip";
+        String zipPath = fileRootPath + zipName;
+
+        //1、获取文件列表 List<File>
+        List<File> fileList = ZipFileUtil.listNextFile(fileRootPath);
+
+        if (fileList == null || fileList.size() == 0) {
+            throw new RuntimeException("FILE_NOT_EXIST_ERROR");
+        }
+
+        //压缩文件的流  *1
+        FileOutputStream zipFileOutputStream = null;
+        ZipOutputStream zipOutput = null;
+        FileInputStream in = null;
+        FileInputStream fileInputStream;
+        BufferedOutputStream bufferedOutputStream = null;
+        BufferedInputStream bis = null;
+
+        try {
+            zipFileOutputStream = new FileOutputStream(zipPath);
+            bufferedOutputStream = new BufferedOutputStream(zipFileOutputStream);
+
+
+            zipOutput = new ZipOutputStream(bufferedOutputStream);
+            byte[] buffer = new byte[1024];
+            int read;
+
+            for (File file : fileList) {
+                //读入的文件流 *2
+                fileInputStream = new FileInputStream(file);
+
+                bis = new BufferedInputStream(fileInputStream);
+
+                //压缩
+                zipOutput.putNextEntry(new ZipEntry(file.getName()));
+                while ((read = bis.read(buffer)) != -1) {
+                    zipOutput.write(buffer, 0, read);
+                }
+                // 每一个文件的流需要单独关闭
+                fileInputStream.close();
+            }
+            if (bis != null) {
+                bis.close();
+            }
+            if (zipOutput != null) {
+                zipOutput.close();
+            }
+            //创建输出流，下载zip
+        } catch (Exception e1) {
+            log.error("异常", e1);
+            throw new RuntimeException("文件操作出异常");
+        } finally {
+            //释放资源 、删除压缩包
+            cleanResource(zipFileOutputStream);
+            cleanResource(zipOutput);
+            cleanResource(in);
+            // 在for循环中已经做了关闭 则此处不用关闭 cleanResource(fileInputStream);
+            cleanResource(bufferedOutputStream);
+            cleanResource(bis);
+
+            log.warn("清理临时文件异常，zip下载路径：" + zipPath);
         }
     }
 

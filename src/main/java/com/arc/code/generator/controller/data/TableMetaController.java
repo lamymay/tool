@@ -1,12 +1,15 @@
 package com.arc.code.generator.controller.data;
 
-import com.arc.code.generator.config.properties.ArcPropertiesProvider;
+import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.MetaService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -31,9 +34,9 @@ public class TableMetaController {
 
     //测试jdbc访问数据库
     @GetMapping(value = "/jdbc")
-    public ResponseEntity selectTableMateByJDBC(@RequestBody ArcPropertiesProvider propertiesProvider) {
+    public ResponseEntity selectTableMateByJDBC(@RequestBody ArcCodeGeneratorContext generatorContext) {
 
-        TableMeta tableMeta = metaService.selectTableMateByJDBC(propertiesProvider);
+        TableMeta tableMeta = metaService.selectTableMateByJDBC(generatorContext);
         ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(200);
         ResponseEntity<TableMeta> responseEntity = bodyBuilder.body(tableMeta);
         log.debug("ResponseEntity={}", responseEntity);
