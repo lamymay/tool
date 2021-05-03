@@ -62,6 +62,13 @@ public class ClassFullName {
         }
     }
 
+    public ClassFullName(   ) {
+
+    }
+    public ClassFullName(String rootNamespace) {
+        this.rootNamespace = rootNamespace;
+    }
+
 
     public String getMapperNamespace() {
         if (StringUtils.isNotBlank(mapperNamespace)) {

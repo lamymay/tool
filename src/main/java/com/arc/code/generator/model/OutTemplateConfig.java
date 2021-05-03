@@ -12,28 +12,34 @@ import lombok.Data;
 @Data
 public class OutTemplateConfig {
 
-
     /**
      * 合成模板需要使用的数据
      */
+    @Deprecated
     private TableMeta meta;
 
-//    /**
-//     * 模板
-//     */
-//    private Template template;
+    private Object data;
 
-//    /**
-//     * 输出文件
-//     */
-//    private File outputFile;
+    private String templateFileName;
 
-    private String templateName;
-
-     private String outputFileFullName;
+    private String outputFileFullName;
 
     private boolean success;
 
+    public OutTemplateConfig(String templateFileName, String outputFileFullName) {
+        this.templateFileName = templateFileName;
+        this.outputFileFullName = outputFileFullName;
+    }
+
+    public OutTemplateConfig(String templateFileName, String outputFileFullName, Object data) {
+        this.templateFileName = templateFileName;
+        this.outputFileFullName = outputFileFullName;
+        this.data = data;
+    }
+
+    public OutTemplateConfig() {
+
+    }
 }
 
 /*

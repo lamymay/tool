@@ -13,7 +13,7 @@ import java.io.File;
  * @since 2021/4/16 18:19
  */
 @Data
-public final class ArcCodeGeneratorContext   {
+public final class ArcCodeGeneratorContext {
 
     private String url; //数据库连接url
     private String user;  //数据库账号
@@ -30,6 +30,7 @@ public final class ArcCodeGeneratorContext   {
     private String output = File.separator + "code_output_";// //T:\data\log\
 
     //输出配置
+    @Deprecated
     private String rootNamespace = "com.arc.zero";
 
     /**
@@ -89,6 +90,7 @@ public final class ArcCodeGeneratorContext   {
 
         configContext.setAuthor("叶超");
         configContext.setRootNamespace("com.demo");
+        configContext.setClassFullName(new ClassFullName("com.demo"));
         configContext.setCommentFormatAsEndOfLine(true);
 
         //        configContext.setMapperNamespace("com.demo.mapper");

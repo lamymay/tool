@@ -2,10 +2,10 @@ package com.arc.code.generator.test.file;
 
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.config.template.ArcTemplateConfiguration;
+import com.arc.code.generator.model.OutTemplateConfig;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.impl.FreemarkerGeneratorServiceImpl;
 import com.arc.code.generator.service.impl.MetaServiceImpl;
-import com.arc.code.generator.utils.FileUtil;
 import freemarker.template.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcPropertiesProvider;
 
@@ -69,9 +69,9 @@ public class CreateProject {
         configContext.setOutputType(1);
         configContext.setOutput("E:\\free");
 
-        List<TemplateConfigWithData> templateConfigWithDataList = prepareOutTemplateData(configContext);
-        for (TemplateConfigWithData temp : templateConfigWithDataList) {
-            freemarkerGenerator.outputFile(FileUtil.createOutFile(temp.getOutputFileName()), temp.getTemplateFileName(), temp.getTemplateData());
+        List<OutTemplateConfig> templateConfigWithDataList = prepareOutTemplateData(configContext);
+        for (OutTemplateConfig temp : templateConfigWithDataList) {
+            freemarkerGenerator.process(temp);
         }
 
 
@@ -93,7 +93,7 @@ public class CreateProject {
         log.info("生成过程耗时{}ms", (t3 - t2));
     }
 
-    private static List<TemplateConfigWithData> prepareOutTemplateData(ArcCodeGeneratorContext configContext) {
+    private static List<OutTemplateConfig> prepareOutTemplateData(ArcCodeGeneratorContext configContext) {
 
         // 输出文件到文件夹
         // projectName
@@ -127,16 +127,16 @@ public class CreateProject {
         //{output}/projectName/src/main/config/application.yml
         //{output}/projectName/src/main/resources/logback-spring.xml
 
-        List<TemplateConfigWithData> list = new ArrayList<>();
+        List<OutTemplateConfig> list = new ArrayList<>();
 
 
         String output = configContext.getOutput() + File.separator + projectName;
 
 
         // 最外层的文件 pom ignore文件
-        list.add(new TemplateConfigWithData("pomXml.ftl", output + File.separator + "pom.xml", null));
+        list.add(new OutTemplateConfig("pomXml.ftl", output + File.separator + "pom.xml"));
 
-        list.add(new TemplateConfigWithData(".gitignore.ftl", output + File.separator + ".gitignore", null));
+        list.add(new OutTemplateConfig(".gitignore.ftl", output + File.separator + ".gitignore"));
 
 
         // 项目测试目录
@@ -158,11 +158,13 @@ public class CreateProject {
 
 
         //{output}/projectName/src/main/main/resources/config
-        list.add(new TemplateConfigWithData("application.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application.yml", null));
-        list.add(new TemplateConfigWithData("application-dev.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application-dev.yml", null));
+        list.add(new OutTemplateConfig("application.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application.yml"));
+        list.add(new OutTemplateConfig("application-dev.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application-dev.yml"));
         // 启动类
-        list.add(new TemplateConfigWithData("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", configContext));
-
+        Map<String, Object> data = new HashMap<>();
+        data.put("rootNamespace", configContext.getClassFullName().getRootNamespace());
+        data.put("createTime", new Date());
+        list.add(new OutTemplateConfig("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", data));
 
         return list;
     }
@@ -226,7 +228,7 @@ public class CreateProject {
 
         StringBuffer outputPath = new StringBuffer();
         String[] split = rootNamespace.split("\\.");
-        for (String everyPath :split ) {
+        for (String everyPath : split) {
             outputPath.append(File.separator).append(everyPath);
         }
         return outputPath.toString();

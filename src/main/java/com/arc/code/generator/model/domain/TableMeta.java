@@ -73,6 +73,14 @@ public class TableMeta implements Serializable {
      */
     private ClassFullName classFullName;
 
+    public TableMeta(String rootNamespace) {
+        this.classFullName = new ClassFullName(rootNamespace);
+    }
+
+    public TableMeta() {
+
+    }
+
 
     @Deprecated
     public String getClassName() {

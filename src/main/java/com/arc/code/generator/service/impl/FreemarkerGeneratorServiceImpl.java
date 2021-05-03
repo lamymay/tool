@@ -187,7 +187,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             tableMeta.setMapperName(getMapperNamespace(configContext, className));
 
             // 获取模板
-            outTemplateConfig.setTemplateName(suffixAndTemplateName.getValue());
+            outTemplateConfig.setTemplateFileName(suffixAndTemplateName.getValue());
             outTemplateConfig.setMeta(tableMeta);
             outTemplateConfig.setOutputFileFullName(output + className + suffixAndTemplateName.getKey());
 
@@ -276,28 +276,26 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
     }
 
 
-    public OutTemplateConfig process(OutTemplateConfig outTemplateConfig) {
+    @Override
+    public void process(OutTemplateConfig outTemplateConfig) {
+
+        //public void outputFile(String , String outputFileFullName, Object data) {
         //log.debug("模板合成,参数OutTemplateConfig={}", JacksonUtils.toJson(outTemplateConfig));
         Assert.notNull(outTemplateConfig, "模板合成错误,原因:模板配置为空");
 
-        TableMeta data = outTemplateConfig.getMeta();
+        String templateName = outTemplateConfig.getTemplateFileName();
         String outputFileFullName = outTemplateConfig.getOutputFileFullName();
-
+        Object data = outTemplateConfig.getMeta();
         Assert.notNull(outputFileFullName, "模板合成错误,原因:输出文件为空");
-        Assert.notNull(data, "模板合成错误,原因:输出参数为空");
+        Object temp = outTemplateConfig.getData();
+        if (temp != null) {
+            data = temp;
+        }
+        //Assert.notNull(data, "模板合成错误,原因:输出参数为空");
 
-
-
-        outputFile(FileUtil.createOutFile(outputFileFullName), outTemplateConfig.getTemplateName(), data);
-        outTemplateConfig.setSuccess(true);
-        return outTemplateConfig;
-    }
-
-    @Override
-    public void outputFile(File outputFile, String templateName, Object data) {
         FileWriter writer = null;
         try {
-            writer = new FileWriter(outputFile);
+            writer = new FileWriter(FileUtil.createOutFile(outputFileFullName));
             Template template = configuration.getTemplate(templateName);
             template.process(data, writer);
             //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);

@@ -2,8 +2,7 @@ package com.arc.code.generator.service;
 
 
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-
-import java.io.File;
+import com.arc.code.generator.model.OutTemplateConfig;
 
 /**
  * 创建代码的服务
@@ -21,8 +20,7 @@ public interface FreemarkerGeneratorService {
      */
     ArcCodeGeneratorContext processByContext(ArcCodeGeneratorContext propertiesProvider);
 
-
-    void outputFile(File outputFile, String templateName, Object data);
+    void process(OutTemplateConfig outTemplateConfig);
 }
 
 
