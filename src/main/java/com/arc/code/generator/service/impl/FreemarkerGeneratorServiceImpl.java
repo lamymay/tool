@@ -7,6 +7,7 @@ import com.arc.code.generator.model.OutTemplateConfig;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.MetaService;
+import com.arc.code.generator.utils.FileUtil;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -178,7 +179,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
             // 设置根路径
             tableMeta.setRootNamespace(configContext.getRootNamespace());
-            ClassFullName classFullName = new ClassFullName(className,configContext);
+            ClassFullName classFullName = new ClassFullName(className, configContext);
 
             tableMeta.setClassFullName(classFullName);
 
@@ -286,12 +287,18 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         Assert.notNull(data, "模板合成错误,原因:输出参数为空");
 
 
-        File outputFile = createOutFile(outputFileFullName);
 
+        outputFile(FileUtil.createOutFile(outputFileFullName), outTemplateConfig.getTemplateName(), data);
+        outTemplateConfig.setSuccess(true);
+        return outTemplateConfig;
+    }
+
+    @Override
+    public void outputFile(File outputFile, String templateName, Object data) {
         FileWriter writer = null;
         try {
             writer = new FileWriter(outputFile);
-            Template template = configuration.getTemplate(outTemplateConfig.getTemplateName());
+            Template template = configuration.getTemplate(templateName);
             template.process(data, writer);
             //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
             writer.flush();
@@ -309,31 +316,6 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             }
 
         }
-        outTemplateConfig.setSuccess(true);
-        return outTemplateConfig;
-    }
-
-    private File createOutFile(String outputFileFullName) {
-        File outputFile = new File(outputFileFullName);
-        if (!outputFile.exists()) {
-            //createNewFile这个方法只能在一层目录下创建文件，不能跳级创建，尽管可以用mkdir(s)创建多层不存在的目录，但是不要直接一个File对象搞定目录和文件都需要创建的情况，可以在已有目录下直接用createNewFile创建文件
-            if (!outputFile.getParentFile().exists()) {
-                boolean mkdirs = outputFile.getParentFile().mkdirs();
-                String msg = "输出文件创建过程中,创建父级路径" + (mkdirs ? "成功" : "失败");
-                log.info(msg);
-                if (!mkdirs) {
-                    throw new RuntimeException(msg);
-                }
-            }
-            try {
-                boolean result = outputFile.createNewFile();
-                log.info("输出文件创建成功={},文件路径={}", result, outputFile.getPath());
-            } catch (IOException exception) {
-                exception.printStackTrace();
-                log.error("输出文件创建异常 createNewFile ", exception);
-            }
-        }
-        return outputFile;
     }
 
 

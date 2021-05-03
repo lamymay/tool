@@ -158,7 +158,7 @@ public class ZipFileUtil {
         }
     }
 
-    public static void outputFilesZip(@NotNull String output) {
+    public static void outputFilesToZip(@NotNull String output) {
         //获得要下载的文件名
         String fileRootPath = output;
         String zipName = System.currentTimeMillis() + ".zip";

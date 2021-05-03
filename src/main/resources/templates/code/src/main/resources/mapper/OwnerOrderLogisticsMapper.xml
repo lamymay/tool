@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.arc.code.mapper.OwnerOrderLogisticsMapper">
+	<resultMap id="ownerOrderLogistics" type="com.arc.code.model.domain.owner.OwnerOrderLogistics">
+		<id property="id" column="id" />
+		<result property="isDeleted" column="is_deleted"/>
+		<result property="gmtCreate" column="gmt_create" />
+		<result property="createOperator" column="create_operator"  />
+		<result property="createOperatorId" column="create_operator_id" />
+		<result property="gmtModified" column="gmt_modified" />
+		<result property="modifyOperatorId" column="modify_operator_id" />
+		<result property="modifyOperator" column="modify_operator"  />
+		<result property="ownerOrderCode" column="owner_order_code"  />
+		<result property="logisticsOrderCode" column="logistics_order_code"  />
+		<result property="receiptType" column="receipt_type"  />
+		<result property="receiptNum" column="receipt_num"/>
+		<result property="transportFee" column="transport_fee"/>
+		<result property="paymentMode" column="payment_mode"/>
+		<result property="carrierId" column="carrier_id" />
+		<result property="carrier" column="carrier"  />
+		<result property="shipperId" column="shipper_id" />
+		<result property="shipper" column="shipper"  />
+		<result property="customerRelaCode" column="customer_rela_code"  />
+	</resultMap>
+
+	<sql id="sql_oms_owner_order_logistics_all_columns">
+		id ,
+		is_deleted ,
+		gmt_create ,
+		create_operator ,
+		create_operator_id ,
+		gmt_modified ,
+		modify_operator_id ,
+		modify_operator ,
+		owner_order_code ,
+		logistics_order_code ,
+		receipt_type ,
+		receipt_num ,
+		transport_fee ,
+		payment_mode ,
+		carrier_id ,
+		carrier ,
+		shipper_id ,
+		shipper ,
+		customer_rela_code
+	</sql>
+
+	<insert id="save" parameterType="com.arc.code.model.domain.owner.OwnerOrderLogistics" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO oms_owner_order_logistics (
+			is_deleted,
+			gmt_create,
+			create_operator,
+			create_operator_id,
+			gmt_modified,
+			modify_operator_id,
+			modify_operator,
+			owner_order_code,
+			logistics_order_code,
+			receipt_type,
+			receipt_num,
+			transport_fee,
+			payment_mode,
+			carrier_id,
+			carrier,
+			shipper_id,
+			shipper,
+			customer_rela_code
+		)
+		VALUES (
+				   #{isDeleted},
+				   now(),
+				   #{createOperator},
+				   #{createOperatorId},
+				   now(),
+				   #{modifyOperatorId},
+				   #{modifyOperator},
+				   #{ownerOrderCode},
+				   #{logisticsOrderCode},
+				   #{receiptType},
+				   #{receiptNum,jdbcType=INTEGER},
+				   #{transportFee},
+				   #{paymentMode,jdbcType=INTEGER},
+				   #{carrierId},
+				   #{carrier},
+				   #{shipperId},
+				   #{shipper},
+				   #{customerRelaCode}
+			   )
+	</insert>
+
+	<update id="update" parameterType="com.arc.code.model.domain.owner.OwnerOrderLogistics">
+		UPDATE oms_owner_order_logistics
+		<set>
+			gmt_modified= now()
+			<if test="isDeleted != null">, is_deleted = #{isDeleted}</if>
+			<if test="modifyOperatorId != null">, modify_operator_id = #{modifyOperatorId}</if>
+			<if test="modifyOperator != null and modifyOperator != ''">, modify_operator = #{modifyOperator}</if>
+			<if test="ownerOrderCode != null and ownerOrderCode != ''">, owner_order_code = #{ownerOrderCode}</if>
+			<if test="logisticsOrderCode != null and logisticsOrderCode != ''">, logistics_order_code = #{logisticsOrderCode}</if>
+			<if test="receiptType != null and receiptType != ''">, receipt_type = #{receiptType}</if>
+			<if test="receiptNum != null">, receipt_num = #{receiptNum,jdbcType=INTEGER}</if>
+			<if test="transportFee != null">, transport_fee = #{transportFee}</if>
+			<if test="paymentMode != null">, payment_mode = #{paymentMode,jdbcType=INTEGER}</if>
+			<if test="carrierId != null">, carrier_id = #{carrierId}</if>
+			<if test="carrier != null and carrier != ''">, carrier = #{carrier}</if>
+			<if test="shipperId != null">, shipper_id = #{shipperId}</if>
+			<if test="shipper != null and shipper != ''">, shipper = #{shipper}</if>
+			<if test="customerRelaCode != null and customerRelaCode != ''">, customer_rela_code = #{customerRelaCode}</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+
+	<delete id="deleteByIdPhysical" parameterType="long">
+		DELETE
+		FROM oms_owner_order_logistics
+		WHERE id = #{id}
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="deleteByIdLogical" parameterType="long">
+		UPDATE oms_owner_order_logistics
+		set gmt_modified = now(),
+			is_deleted=1
+		WHERE id = #{id}
+		  AND is_deleted = 1
+	</update>
+
+	<select id="get" parameterType="long" resultMap="ownerOrderLogistics">
+		SELECT <include refid="sql_oms_owner_order_logistics_all_columns" />
+		FROM oms_owner_order_logistics
+		WHERE id = #{id}
+		AND is_deleted = 0
+	</select>
+
+	<!-- 分页查询用的公共sql-->
+	<sql id="sqlCommonWhere">
+		<where>
+			is_deleted = 0
+			and shipper_id = #{shipperId}
+			<if test="receiptType != null and receiptType != ''">AND receipt_type = #{receiptType}</if>
+			<if test="paymentMode != null and paymentMode != ''">AND payment_mode = #{paymentMode}</if>
+			<if test="ownerOrderCode != null and ownerOrderCode != ''">AND owner_order_code = #{ownerOrderCode}</if>
+			<if test="logisticsOrderCode != null and logisticsOrderCode != ''">AND logistics_order_code =
+				#{logisticsOrderCode}
+			</if>
+			<if test="createOperator != null and createOperator != ''">AND create_operator LIKE
+				CONCAT(#{createOperator},'%')
+			</if>
+			<if test="modifyOperator != null and modifyOperator != ''">AND modify_operator LIKE
+				CONCAT(#{modifyOperator},'%')
+			</if>
+			<if test="shipper != null and shipper != ''">AND shipper LIKE
+				CONCAT(#{shipper},'%')
+			</if>
+		</where>
+	</sql>
+
+	<select id="countForListPage" parameterType="com.arc.code.model.domain.owner.OwnerOrderLogistics" resultType="int">
+		SELECT count(*) FROM oms_owner_order_logistics
+		<include refid="sqlCommonWhere"/>
+	</select>
+
+	<select id="listPage" parameterType="com.arc.code.model.domain.owner.OwnerOrderLogistics" resultMap="ownerOrderLogistics">
+		SELECT
+		<include refid="sql_oms_owner_order_logistics_all_columns"/>
+		FROM oms_owner_order_logistics
+		<include refid="sqlCommonWhere"/>
+		order by id DESC
+		limit #{start},#{pageSize}
+	</select>
+
+
+</mapper>

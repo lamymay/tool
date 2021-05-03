@@ -15,6 +15,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcPropertiesProvider;
+
 
 /**
  * 启动类--非web Server方式『方案一』
@@ -87,38 +89,6 @@ public class LaunchGeneratorOverSpringContainerMain {
     }
 
 
-    private static ArcCodeGeneratorContext getArcPropertiesProvider() {
-
-        // 参数配置
-        com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext configContext = new com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext();
-        configContext.setUrl("jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&useAffectedRows=true&useSSL=false&serverTimezone=GMT%2B8");
-        configContext.setUser("root");
-        configContext.setPassword("admin");
-        configContext.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-        //数据库名 改进一下不要指定了
-        configContext.setGenerateType(91);
-
-        configContext.setSchemaName("test");
-//        configContext.setTableName("click");
-//        configContext.setTableAlias("click");
-
-        configContext.setAuthor("叶超");
-        configContext.setRootNamespace("com.demo");
-        configContext.setCommentFormatAsEndOfLine(true);
-
-        //        configContext.setMapperNamespace("com.demo.mapper");
-        //        configContext.setServiceNamespace("com.demo.service");
-        //        configContext.setServiceImplNamespace("com.demo.service.impl");
-        //        configContext.setControllerNamespace("com.demo.service.impl");
-
-        configContext.setOutput("D:\\free");
-
-
-        System.out.println(JSON.toJSONString(configContext));
-        return configContext;
-
-    }
 
 
 }
