@@ -18,8 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcPropertiesProvider;
 
@@ -69,12 +69,9 @@ public class CreateProject {
         configContext.setOutputType(1);
         configContext.setOutput("E:\\free");
 
-        Object data = new Object();
-        Map<File, String> map = prepareOutMap(configContext.getOutput());
-
-
-        for (Map.Entry<File, String> entry : map.entrySet()) {
-            freemarkerGenerator.outputFile(entry.getKey(), entry.getValue(), data);
+        List<TemplateConfigWithData> templateConfigWithDataList = prepareOutTemplateData(configContext);
+        for (TemplateConfigWithData temp : templateConfigWithDataList) {
+            freemarkerGenerator.outputFile(FileUtil.createOutFile(temp.getOutputFileName()), temp.getTemplateFileName(), temp.getTemplateData());
         }
 
 
@@ -96,7 +93,8 @@ public class CreateProject {
         log.info("生成过程耗时{}ms", (t3 - t2));
     }
 
-    private static Map<File, String> prepareOutMap(String output) {
+    private static List<TemplateConfigWithData> prepareOutTemplateData(ArcCodeGeneratorContext configContext) {
+
         // 输出文件到文件夹
         // projectName
         // |--src
@@ -128,20 +126,45 @@ public class CreateProject {
         //{output}/projectName/src/main/config/application-dev.yml
         //{output}/projectName/src/main/config/application.yml
         //{output}/projectName/src/main/resources/logback-spring.xml
-        Map<File, String> map = new HashMap<>();
+
+        List<TemplateConfigWithData> list = new ArrayList<>();
 
 
-        output = output + File.separator + projectName;
-        String application_properties = output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application.properties";
-        System.out.println(application_properties);
-        System.out.println(application_properties);
-        System.out.println(application_properties);
+        String output = configContext.getOutput() + File.separator + projectName;
 
-        map.put(FileUtil.createOutFile(application_properties), "application_properties.ftl");
-        map.put(FileUtil.createOutFile(output + File.separator + "application.properties"), "pom_xml.ftl");
-        map.put(FileUtil.createOutFile(output + File.separator + ".gitignore"), ".gitignore.ftl");
 
-        return map;
+        // 最外层的文件 pom ignore文件
+        list.add(new TemplateConfigWithData("pomXml.ftl", output + File.separator + "pom.xml", null));
+
+        list.add(new TemplateConfigWithData(".gitignore.ftl", output + File.separator + ".gitignore", null));
+
+
+        // 项目测试目录
+        //{output}/projectName/src/test/java/resources
+        createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "java");
+        createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "resources");
+
+        // 项目工作目录
+        //{output}/projectName/src/main/main/java
+        //{output}/projectName/src/main/main/resources/mapper
+        //{output}/projectName/src/main/main/resources/static
+        //{output}/projectName/src/main/main/resources/templates
+//        createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "java");
+//        createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "resources");
+//
+//        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "mapper");
+//        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static");
+//        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "templates");
+
+
+        //{output}/projectName/src/main/main/resources/config
+        list.add(new TemplateConfigWithData("application.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application.yml", null));
+        list.add(new TemplateConfigWithData("application-dev.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application-dev.yml", null));
+        // 启动类
+        list.add(new TemplateConfigWithData("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", configContext));
+
+
+        return list;
     }
 
 
@@ -187,7 +210,7 @@ public class CreateProject {
         createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "resources");
 
         // todo
-        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + builtFilePath(configContext.getRootNamespace()));
+        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + getFilePathByRootNamespace(configContext.getRootNamespace()));
 
         createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "mapper");
         createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static");
@@ -196,13 +219,14 @@ public class CreateProject {
 
     }
 
-    private static String builtFilePath(String rootNamespace) {
+    private static String getFilePathByRootNamespace(String rootNamespace) {
         if (StringUtils.isBlank(rootNamespace)) {
             return "";
         }
 
         StringBuffer outputPath = new StringBuffer();
-        for (String everyPath : rootNamespace.split(".")) {
+        String[] split = rootNamespace.split("\\.");
+        for (String everyPath :split ) {
             outputPath.append(File.separator).append(everyPath);
         }
         return outputPath.toString();
@@ -221,7 +245,7 @@ public class CreateProject {
 
     }
 
-    static String projectName = "projectName";
+    static String projectName = "code";
 
     private static void createDefaultPOMXml(ArcCodeGeneratorContext configContext) {
         Integer outputType = configContext.getOutputType();
