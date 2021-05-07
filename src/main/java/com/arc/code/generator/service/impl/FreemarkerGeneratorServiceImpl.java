@@ -208,7 +208,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
                 && StringUtils.isNotBlank(configContext.getProjectConfig().getMapperNamespace())) {
             return configContext.getProjectConfig().getMapperNamespace().trim();
         }
-        if (configContext != null && StringUtils.isNotBlank(configContext.getRootNamespace())) {
+        if (configContext != null && !StringUtils.isEmpty(configContext.getRootNamespace())) {
             return configContext.getRootNamespace() + className;
         }
         throw new RuntimeException("参数配置错误,mapper接口名称没有指定");
@@ -242,7 +242,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
         ProjectConfig projectConfig = configContext.getProjectConfig();
 
-        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", rootNamespace);
+        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", rootNamespace) + className+File.separator;
         log.debug("输出文件的前缀是={}", pathPrefix);
 
 

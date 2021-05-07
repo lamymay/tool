@@ -3,6 +3,7 @@ package ${rootNamespace};
 <#--<#if meta.meta.dateTypeExists>-->
 <#--import java.util.Date;-->
 <#--</#if>-->
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
