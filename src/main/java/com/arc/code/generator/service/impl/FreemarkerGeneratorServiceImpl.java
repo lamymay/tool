@@ -225,7 +225,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
 
         final String output = configContext.getOutput();
-        final String className = configContext.getProjectConfig().getProjectName();
+        final String className = configContext.getProjectConfig().getClassName();
         String rootNamespace = configContext.getProjectConfig().getRootNamespace();
 
         Integer generateType = configContext.getGenerateType();
@@ -242,7 +242,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
         ProjectConfig projectConfig = configContext.getProjectConfig();
 
-        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", rootNamespace) + className+File.separator;
+        //D:\free\test\src\main\java\
+        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java",configContext.getProjectConfig().getRootNamespace());
         log.debug("输出文件的前缀是={}", pathPrefix);
 
 
@@ -251,8 +252,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         switch (generateType) {
             // only model
             case 0:
-                //output + className +
-                javaSuffixAndTemplateName.put("model.ftl", pathPrefix + "Model.java");
+                javaSuffixAndTemplateName.put("model.ftl", pathPrefix + ".java");
                 break;
             // only xml
             case 1:
@@ -278,16 +278,26 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
                 // default 完整输出模式
             default:
 
-                javaSuffixAndTemplateName.put("model.ftl", pathPrefix + "Model.java");
-                javaSuffixAndTemplateName.put("mapperXml.ftl", pathPrefix + "Mapper.xml");
-                javaSuffixAndTemplateName.put("mapperInterface.ftl", pathPrefix + "MapperInterface.java");
+                javaSuffixAndTemplateName.put("model.ftl", pathPrefix + className + "Model.java");
 
-                javaSuffixAndTemplateName.put("service.ftl", pathPrefix + "Service.java");
-                javaSuffixAndTemplateName.put("serviceImpl.ftl", pathPrefix + "ServiceImpl.java");
-                javaSuffixAndTemplateName.put("controller.ftl", pathPrefix + "Controller.java");
-                javaSuffixAndTemplateName.put("request.ftl", pathPrefix + "Request.java");
-                javaSuffixAndTemplateName.put("response.ftl", pathPrefix + "Response.java");
 
+                javaSuffixAndTemplateName.put("mapperXml.ftl", pathPrefix + className + "Mapper.xml");
+                javaSuffixAndTemplateName.put("mapperInterface.ftl", pathPrefix + className + "MapperInterface.java");
+                javaSuffixAndTemplateName.put("service.ftl", pathPrefix + className + "Service.java");
+                javaSuffixAndTemplateName.put("serviceImpl.ftl", pathPrefix + className + "ServiceImpl.java");
+                javaSuffixAndTemplateName.put("controller.ftl", pathPrefix + className + "Controller.java");
+                javaSuffixAndTemplateName.put("request.ftl", pathPrefix + className + "Request.java");
+                javaSuffixAndTemplateName.put("response.ftl", pathPrefix + className + "Response.java");
+
+
+                //    javaSuffixAndTemplateName.put("model.ftl", concatPath( pathPrefix ,"model.domain") +className+ "Model.java");
+                //                javaSuffixAndTemplateName.put("mapperXml.ftl", concatPath( pathPrefix ,"mapper")+className+ "Mapper.xml");
+                //                javaSuffixAndTemplateName.put("mapperInterface.ftl", concatPath( pathPrefix ,"mapper") + className+"MapperInterface.java");
+                //                javaSuffixAndTemplateName.put("service.ftl",concatPath( pathPrefix ,"service")+ className+"Service.java");
+                //                javaSuffixAndTemplateName.put("serviceImpl.ftl", concatPath( pathPrefix ,"service.impl")+ className+"ServiceImpl.java");
+                //                javaSuffixAndTemplateName.put("controller.ftl",concatPath( pathPrefix ,"controller")+ className+"Controller.java");
+                //                javaSuffixAndTemplateName.put("request.ftl", concatPath( pathPrefix ,"model.request") + className+"Request.java");
+                //                javaSuffixAndTemplateName.put("response.ftl", concatPath( pathPrefix ,"model.response") + className+"Response.java");
         }
         return javaSuffixAndTemplateName;
     }

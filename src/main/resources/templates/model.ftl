@@ -4,6 +4,8 @@ package ${rootNamespace};
 <#--import java.util.Date;-->
 <#--</#if>-->
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Getter;
 import lombok.Setter;
 

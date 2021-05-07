@@ -7,6 +7,7 @@ import com.arc.code.generator.model.OutTemplateConfig;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.impl.FreemarkerGeneratorServiceImpl;
 import com.arc.code.generator.service.impl.MetaServiceImpl;
+import com.arc.code.generator.utils.ZipFileUtil;
 import freemarker.template.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,24 +66,15 @@ public class CreateProject {
         //  2、从Spring容器中获取生成工具bean   (干掉 mybatis 转而使用jdbc!)
         FreemarkerGeneratorService freemarkerGenerator = context.getBean(FreemarkerGeneratorService.class);
 
-        // 3、输出文件到文件夹
+        // 3、输出文件到文件夹 or 项目
+        builtProject(freemarkerGenerator, configContext);
 
-        configContext.setOutputType(1);
-        configContext.setOutput("D:\\free");
-//
-        List<OutTemplateConfig> templateConfigWithDataList = prepareOutTemplateData(configContext);
-        for (OutTemplateConfig temp : templateConfigWithDataList) {
-            freemarkerGenerator.process(temp);
-        }
-
-        // 3、输出文件到文件夹
+        // 3、合成模板
         ArcCodeGeneratorContext produceResult = freemarkerGenerator.processByContext(configContext);
-
-        System.out.println(JSON.toJSONString(produceResult));
-
+        log.debug("合成模板,返回={}", JSON.toJSONString(produceResult));
         // 结果输出 文件输出zip
         String outPath = configContext.getOutput();
-        //        ZipFileUtil.outputFilesZip(output);
+        ZipFileUtil.outputFilesToZip(outPath);
 
 
         try {
@@ -94,6 +86,14 @@ public class CreateProject {
         }
         long t3 = System.currentTimeMillis();
         log.info("生成过程耗时{}ms", (t3 - t2));
+    }
+
+    private static void builtProject(FreemarkerGeneratorService freemarkerGenerator, ArcCodeGeneratorContext configContext) {
+        List<OutTemplateConfig> templateConfigWithDataList = prepareOutTemplateData(configContext);
+        for (OutTemplateConfig temp : templateConfigWithDataList) {
+            freemarkerGenerator.process(temp);
+        }
+
     }
 
     private static List<OutTemplateConfig> prepareOutTemplateData(ArcCodeGeneratorContext configContext) {

@@ -24,22 +24,26 @@ public class ZipFileUtil {
     /**
      * 返回指定目录下的全部文件
      *
-     * @param rootFileFolder 指定目录
+     * @param rootFile 指定目录
      * @return 返回指定目录下的全部文件
      */
-    public static List<File> listNextFile(String rootFileFolder) {
-        File folder = new File(rootFileFolder);
-        File[] listOfFiles = folder.listFiles();
-        List<File> fileList = null;
+    public static List<File> listNextFile(File rootFile) {
+        File[] listOfFiles = rootFile.listFiles();
+        List<File> fileList = new LinkedList<>();
         if (listOfFiles == null || listOfFiles.length < 1) {
             return fileList;
         }
-        if (listOfFiles.length > 0) {
-            fileList = new LinkedList<>();
-        }
         for (File file : listOfFiles) {
-            if (file.isFile()) {
+            if (file.isFile()
+                    && !".gitignore".equals(file.getName())
+                    && !"application.yml".equals(file.getName())
+                    && !"pom.xml".equals(file.getName())
+                    && !"application-dev.yml".equals(file.getName())
+            ) {
                 fileList.add(file);
+            }
+            if (file.isDirectory()) {
+                fileList.addAll(listNextFile(file));
             }
         }
         return fileList;
@@ -84,7 +88,7 @@ public class ZipFileUtil {
         String zipPath = fileRootPath + zipName;
 
         //1、获取文件列表 List<File>
-        List<File> fileList = ZipFileUtil.listNextFile(fileRootPath);
+        List<File> fileList = ZipFileUtil.listNextFile(new File(fileRootPath));
 
         if (fileList == null || fileList.size() == 0) {
             throw new RuntimeException("FILE_NOT_EXIST_ERROR");
@@ -160,12 +164,11 @@ public class ZipFileUtil {
 
     public static void outputFilesToZip(@NotNull String output) {
         //获得要下载的文件名
-        String fileRootPath = output;
         String zipName = System.currentTimeMillis() + ".zip";
-        String zipPath = fileRootPath + zipName;
+        String zipPath = output + zipName;
 
         //1、获取文件列表 List<File>
-        List<File> fileList = ZipFileUtil.listNextFile(fileRootPath);
+        List<File> fileList = ZipFileUtil.listNextFile(new File(output));
 
         if (fileList == null || fileList.size() == 0) {
             throw new RuntimeException("FILE_NOT_EXIST_ERROR");

@@ -88,8 +88,9 @@ public final class ArcCodeGeneratorContext {
         configContext.setPassword("admin");
         configContext.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        //数据库名 改进一下不要指定了
+        //数据库名 建议指定若不指定使用默认数据JDBC url中的数据库
         configContext.setGenerateType(91);
+        configContext.setOutputType(1);
 
         configContext.setSchemaName("bu_oms");
         configContext.setTableName("oms_inquiry_order");
@@ -98,9 +99,9 @@ public final class ArcCodeGeneratorContext {
 
         configContext.setAuthor("叶超");
 
-        ProjectConfig classFullName = new ProjectConfig("com.demo");
+        ProjectConfig classFullName = new ProjectConfig("com.arc.app");
         configContext.setRootNamespace(classFullName.getRootNamespace());
-        classFullName.setProjectName("test");
+        classFullName.setProjectName("code");
 
         configContext.setProjectConfig(classFullName);
         configContext.setCommentFormatAsEndOfLine(true);

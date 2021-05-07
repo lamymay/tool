@@ -175,7 +175,7 @@ public class MetaServiceImpl implements MetaService {
                 se.printStackTrace();
             }
         }
-        log.info("jdbc 结束={}");
+        log.info("jdbc结束,tableMeta={}",JSON.toJSONString(tableMeta));
         return tableMeta;
     }
 

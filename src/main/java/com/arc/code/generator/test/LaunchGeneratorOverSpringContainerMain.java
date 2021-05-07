@@ -76,7 +76,7 @@ public class LaunchGeneratorOverSpringContainerMain {
         log.info("输出目录={}    \n生成结果={}", output, (success ? "成功" : "失败"));
 
         // 文件输出zip
-        //        ZipFileUtil.outputFilesZip(output);
+        //        ZipFileUtil.outputFilesToZip(output);
 
         //3、结果输出
         try {

@@ -57,22 +57,24 @@ public class FileUtil {
     }
 
 
-
     /*
      * 完成文件的剪切
      */
     public static void main(String[] args) {
-        String source = "C:\\data\\temp\\source";
-        String dest = "C:\\data\\temp\\dest";
+//        String source = "C:\\data\\temp\\source";
+//        String dest = "C:\\data\\temp\\dest";
         //cutFile(source, dest);
         //deleteSource(new File("C:\\data\\temp"));
         //System.out.println(getTimeString());
-        //
 
-        System.out.println(concatPath("D:\\test", "demo", "src\\main\\java","com.arc"));
-        System.out.println(concatPath("D:\\test", "demo\\", "src\\main\\java","com.arc"));
-        System.out.println(concatPath("D:\\test", "demo/", "src\\main\\java","com.arc"));
-        //System.out.println(concatPath(File.separator+"D:\\test", "demo3", "com.arc"));
+
+
+        // "/data/test"
+        // "C:\\data\\"
+        // "C:\\data"
+        // "C:/data/"
+
+        System.out.println(concatPath("D:\\test", "demo/", "src\\main\\java", "com.arc.app"));
 
     }
 
@@ -149,9 +151,9 @@ public class FileUtil {
     }
 
 
+    @Deprecated
     public static String getPrefix(String output, String projectName, String packageName) {
-        packageName = (packageName == null) ? "test" : packageName;
-        return concatPath(output, packageName, packageName);
+        return concatPath(output, projectName, packageName);
     }
 
     public static String concatPath(String... stringList) {
@@ -161,20 +163,15 @@ public class FileUtil {
         }
 
         StringBuffer stringBuffer = new StringBuffer();
-
         for (String str : stringList) {
             if (str != null || str.trim().length() != 0) {
                 stringBuffer.append(builtPath(str));
             }
         }
-
         return stringBuffer.toString();
     }
 
-    // "/data/test"
-    // "C:\\data\\"
-    // "C:\\data"
-    // "C:/data/"
+
 
     private static String builtPath(String str) {
         if (str == null || "".equals(str.trim())) {
@@ -185,7 +182,15 @@ public class FileUtil {
         if (true) {
             // 把包名称处理下
             if (str.contains(".")) {
-                str = str.replaceAll("\\\\.", File.separator);
+
+                str = str.replace(".", File.separator);
+
+
+//                String[] split = str.split("\\.");
+//                for (String item : split) {
+//                    str= builtPath(item);
+//                    System.out.println(str);
+//                }
             }
 
             //  斜线开头 清除掉
