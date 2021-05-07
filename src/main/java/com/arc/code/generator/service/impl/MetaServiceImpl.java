@@ -75,7 +75,7 @@ public class MetaServiceImpl implements MetaService {
             log.info("连接数据库....");
             connection = DriverManager.getConnection(url, user, password);
             // 执行查询
-          log.info("JDBC 连接数据OK ...");
+            log.info("JDBC 连接数据OK ...");
             String sql = "select t.table_schema AS TABLE_SCHEMA  ,t.table_name AS TABLE_NAME,t.table_comment AS TABLE_COMMENT, "
 
                     + "c.table_schema AS COL_TABLE_SCHEMA,c.table_name AS COL_TABLE_NAME,c.column_name AS COL_COLUMN_NAME, "
@@ -92,7 +92,6 @@ public class MetaServiceImpl implements MetaService {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             // 展开结果集数据库
-            tableMeta = new TableMeta();
             List<ColumnMeta> columns = new LinkedList<>();
 
             String table_name = null;
@@ -133,21 +132,22 @@ public class MetaServiceImpl implements MetaService {
                 // 输出数据
                 columns.add(columnMeta);
             }
-            tableMeta.setColumns(columns);
-
-
-            // 转换为驼峰
-            if (table_name != null) {
-                String[] arr = table_name.split("_");
-                StringBuilder sb = new StringBuilder();
-                for (String s : arr) {
-                    sb.append(NameUtil.upperCaseFirstWord(s));
+            if (columns != null && columns.size() > 0) {
+                tableMeta = new TableMeta();
+                tableMeta.setColumns(columns);
+                // 转换为驼峰
+                if (table_name != null) {
+                    String[] arr = table_name.split("_");
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : arr) {
+                        sb.append(NameUtil.upperCaseFirstWord(s));
+                    }
+                    tableMeta.setTableName(sb.toString());
                 }
-                tableMeta.setTableName(sb.toString());
-            }
 
-            tableMeta.setTableComment(table_comment);
-            tableMeta.setTableSchema(table_schema);
+                tableMeta.setTableComment(table_comment);
+                tableMeta.setTableSchema(table_schema);
+            }
 
             // 完成后关闭
             resultSet.close();
@@ -196,12 +196,7 @@ public class MetaServiceImpl implements MetaService {
             return tableMetaList;
         }
 
-        TableMeta tableMeta = selectTableMateByJDBC(generatorContext.getUrl(),
-                generatorContext.getUser(),
-                generatorContext.getPassword(),
-                generatorContext.getDriverClassName(),
-                generatorContext.getSchemaName(),
-                generatorContext.getTableName());
+        TableMeta tableMeta = selectTableMateByJDBC(generatorContext);
 
         tableMateList.add(tableMeta);
         return tableMateList;
@@ -336,7 +331,7 @@ public class MetaServiceImpl implements MetaService {
             }
         }
 
-        log.info("jdbc 结束={}",tempMap.size());
+        log.info("jdbc 结束={}", tempMap.size());
         return new ArrayList<>(tempMap.values());
     }
 

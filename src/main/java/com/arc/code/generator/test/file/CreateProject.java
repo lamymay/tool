@@ -1,5 +1,6 @@
 package com.arc.code.generator.test.file;
 
+import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.config.template.ArcTemplateConfiguration;
 import com.arc.code.generator.model.OutTemplateConfig;
@@ -67,20 +68,22 @@ public class CreateProject {
         // 3、输出文件到文件夹
 
         configContext.setOutputType(1);
-        configContext.setOutput("E:\\free");
-
+        configContext.setOutput("D:\\free");
+//
         List<OutTemplateConfig> templateConfigWithDataList = prepareOutTemplateData(configContext);
         for (OutTemplateConfig temp : templateConfigWithDataList) {
             freemarkerGenerator.process(temp);
         }
 
+        // 3、输出文件到文件夹
+        ArcCodeGeneratorContext produceResult = freemarkerGenerator.processByContext(configContext);
 
-        //createDefaultBasePackage(configContext);
-
+        System.out.println(JSON.toJSONString(produceResult));
 
         // 结果输出 文件输出zip
         String outPath = configContext.getOutput();
         //        ZipFileUtil.outputFilesZip(output);
+
 
         try {
             File file = new File(outPath);
@@ -130,7 +133,7 @@ public class CreateProject {
         List<OutTemplateConfig> list = new ArrayList<>();
 
 
-        String output = configContext.getOutput() + File.separator + projectName;
+        String output = configContext.getOutput() + File.separator + configContext.getProjectConfig().getProjectName();
 
 
         // 最外层的文件 pom ignore文件
@@ -162,7 +165,7 @@ public class CreateProject {
         list.add(new OutTemplateConfig("application-dev.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application-dev.yml"));
         // 启动类
         Map<String, Object> data = new HashMap<>();
-        data.put("rootNamespace", configContext.getClassFullName().getRootNamespace());
+        data.put("rootNamespace", configContext.getProjectConfig().getRootNamespace());
         data.put("createTime", new Date());
         list.add(new OutTemplateConfig("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", data));
 
@@ -172,7 +175,7 @@ public class CreateProject {
 
     private static void createDefaultBasePackage(ArcCodeGeneratorContext configContext) throws IOException {
 
-        String output = configContext.getOutput() + File.separator + projectName;
+        String output = configContext.getOutput() + File.separator + configContext.getProjectConfig().getProjectName();
 
         log.debug("输出文件文件夹={}", output);
 
@@ -247,9 +250,9 @@ public class CreateProject {
 
     }
 
-    static String projectName = "code";
 
     private static void createDefaultPOMXml(ArcCodeGeneratorContext configContext) {
+        String projectName = "code";
         Integer outputType = configContext.getOutputType();
         // E:/free/unit_test
         String output = configContext.getOutput() + File.separator + projectName;

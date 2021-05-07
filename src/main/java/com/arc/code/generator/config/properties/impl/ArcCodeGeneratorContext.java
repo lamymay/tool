@@ -1,8 +1,9 @@
 package com.arc.code.generator.config.properties.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.arc.code.generator.model.ClassFullName;
+import com.arc.code.generator.model.ProjectConfig;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 
@@ -27,22 +28,28 @@ public final class ArcCodeGeneratorContext {
     private String tableAlias;//数据库表在mapper的sql中的别名
     private String author;//"@author" 需要指定,缺省情况下获取机器当前用户
 
+    /**
+     * 项目维度的配置可缺省?
+     */
+    private ProjectConfig projectConfig;
+
+
+    // ****************  文件输出相关配置 ****************
+
+    @Deprecated
     private String output = File.separator + "code_output_";// //T:\data\log\
 
     //输出配置
-    @Deprecated
     private String rootNamespace = "com.arc.zero";
-
-    /**
-     * 命名
-     */
-    private ClassFullName classFullName;
 
     /**
      * 代码生成方案
      */
     private Integer generateType;
 
+    /**
+     * 输出方案: 0=输出到同一个输出文件夹(默认) 1=输出到新的MAVEN项目文件夹
+     */
     private Integer outputType;
 
 
@@ -84,13 +91,18 @@ public final class ArcCodeGeneratorContext {
         //数据库名 改进一下不要指定了
         configContext.setGenerateType(91);
 
-        configContext.setSchemaName("test");
-//        configContext.setTableName("click");
+        configContext.setSchemaName("bu_oms");
+        configContext.setTableName("oms_inquiry_order");
+        configContext.setRemovePrefix("oms_");
 //        configContext.setTableAlias("click");
 
         configContext.setAuthor("叶超");
-        configContext.setRootNamespace("com.demo");
-        configContext.setClassFullName(new ClassFullName("com.demo"));
+
+        ProjectConfig classFullName = new ProjectConfig("com.demo");
+        configContext.setRootNamespace(classFullName.getRootNamespace());
+        classFullName.setProjectName("test");
+
+        configContext.setProjectConfig(classFullName);
         configContext.setCommentFormatAsEndOfLine(true);
 
         //        configContext.setMapperNamespace("com.demo.mapper");
@@ -105,4 +117,16 @@ public final class ArcCodeGeneratorContext {
         return configContext;
 
     }
+
+    public void setClassNameIfNotConfig(String className) {
+        ProjectConfig projectConfig = this.getProjectConfig();
+        if (projectConfig == null) {
+            projectConfig = new ProjectConfig();
+        }
+
+        if (StringUtils.isBlank(projectConfig.getClassName())) {
+            projectConfig.setClassName(className);
+        }
+    }
+
 }

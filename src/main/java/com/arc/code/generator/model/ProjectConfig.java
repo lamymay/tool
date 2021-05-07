@@ -11,9 +11,10 @@ import org.apache.commons.lang3.StringUtils;
  * @since 2021/4/30 14:26
  */
 @Data
-public class ClassFullName {
+public class ProjectConfig {
 
     private String className;
+    private String projectName="default_test";
 
     private String rootNamespace;
 
@@ -23,7 +24,7 @@ public class ClassFullName {
     private String serviceImplNamespace;
     private String controllerNamespace;
 
-    public ClassFullName(String className, ArcCodeGeneratorContext arcCodeGeneratorContext) {
+    public ProjectConfig(String className, ArcCodeGeneratorContext arcCodeGeneratorContext) {
 
         if (arcCodeGeneratorContext == null || StringUtils.isBlank(className) || StringUtils.isBlank(arcCodeGeneratorContext.getRootNamespace())) {
             throw new RuntimeException("类名称与包根路径不可缺省");
@@ -33,7 +34,7 @@ public class ClassFullName {
         this.rootNamespace = arcCodeGeneratorContext.getRootNamespace();
 
         // 传入参数是否指定每个接口的类路径
-        ClassFullName defineClassFullName = arcCodeGeneratorContext.getClassFullName();
+        ProjectConfig defineClassFullName = arcCodeGeneratorContext.getProjectConfig();
 
         if (defineClassFullName != null && StringUtils.isNotBlank(defineClassFullName.getModelNamespace())) {
             this.modelNamespace = defineClassFullName.getModelNamespace();
@@ -62,10 +63,10 @@ public class ClassFullName {
         }
     }
 
-    public ClassFullName(   ) {
+    public ProjectConfig(   ) {
 
     }
-    public ClassFullName(String rootNamespace) {
+    public ProjectConfig(String rootNamespace) {
         this.rootNamespace = rootNamespace;
     }
 

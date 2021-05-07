@@ -1,6 +1,6 @@
 package com.arc.code.generator.model.domain;
 
-import com.arc.code.generator.model.ClassFullName;
+import com.arc.code.generator.model.ProjectConfig;
 import com.arc.code.generator.utils.NameUtil;
 import lombok.Data;
 import org.springframework.lang.Nullable;
@@ -71,10 +71,10 @@ public class TableMeta implements Serializable {
     /**
      * 所有的全限定名称用此类封装
      */
-    private ClassFullName classFullName;
+    private ProjectConfig classFullName;
 
     public TableMeta(String rootNamespace) {
-        this.classFullName = new ClassFullName(rootNamespace);
+        this.classFullName = new ProjectConfig(rootNamespace);
     }
 
     public TableMeta() {
@@ -112,7 +112,7 @@ public class TableMeta implements Serializable {
     public String getClassName(@Nullable String removePrefix) {
         String name = tableName;
         if (removePrefix != null) {
-            if (tableName.startsWith(removePrefix)) {
+            if (tableName != null && tableName.startsWith(removePrefix)) {
                 name = tableName.substring(removePrefix.length());
             }
         }
@@ -153,6 +153,24 @@ public class TableMeta implements Serializable {
         return NameUtil.lowerCaseFirstWord(getClassName());
     }
 
+    @Override
+    public String toString() {
+        return "TableMeta{" +
+                "tableName='" + tableName + '\'' +
+                ", tableComment='" + tableComment + '\'' +
+                ", lowerCaseFirstWordClassName='" + lowerCaseFirstWordClassName + '\'' +
+                ", columns=" + columns +
+                ", tableSchema='" + tableSchema + '\'' +
+                ", importDate=" + importDate +
+                ", createTime=" + createTime +
+                ", author='" + author + '\'' +
+                ", tableAlias='" + tableAlias + '\'' +
+                ", javaPackage='" + javaPackage + '\'' +
+                ", rootNamespace='" + rootNamespace + '\'' +
+                ", mapperName='" + mapperName + '\'' +
+                ", classFullName=" + classFullName +
+                '}';
+    }
 }
 
 
