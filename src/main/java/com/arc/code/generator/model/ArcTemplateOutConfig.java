@@ -1,6 +1,5 @@
 package com.arc.code.generator.model;
 
-import com.arc.code.generator.model.domain.TableMeta;
 import lombok.Data;
 
 /**
@@ -10,15 +9,11 @@ import lombok.Data;
  * @since 2021/4/23 19:42
  */
 @Data
-@Deprecated
-public class OutTemplateConfig implements TemplateOutConfig {
+public class ArcTemplateOutConfig implements TemplateOutConfig {
 
     /**
      * 合成模板需要使用的数据
      */
-    @Deprecated
-    private TableMeta meta;
-
     private Object data;
 
     private String templateFileName;
@@ -27,18 +22,18 @@ public class OutTemplateConfig implements TemplateOutConfig {
 
     private boolean success;
 
-    public OutTemplateConfig(String templateFileName, String outputFileFullName) {
+    public ArcTemplateOutConfig(String templateFileName, String outputFileFullName) {
         this.templateFileName = templateFileName;
         this.outputFileFullName = outputFileFullName;
     }
 
-    public OutTemplateConfig(String templateFileName, String outputFileFullName, Object data) {
+    public ArcTemplateOutConfig(String templateFileName, String outputFileFullName, Object data) {
         this.templateFileName = templateFileName;
         this.outputFileFullName = outputFileFullName;
         this.data = data;
     }
 
-    public OutTemplateConfig() {
+    public ArcTemplateOutConfig() {
 
     }
 }

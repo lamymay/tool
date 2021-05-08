@@ -19,16 +19,24 @@ import java.util.List;
 public class TableMeta implements Serializable {
 
     private static final long serialVersionUID = -1L;
+    private Date createTime = new Date();
 
     /**
-     * 表名
+     * 表名原始值
      */
     private String tableName;
+
+    private String tableAlias;
 
     /**
      * 表注释
      */
     private String tableComment;
+
+    /**
+     * 表名称转换成JAVA模型的名称,去除下划线,驼峰写法,首字母大写等
+     */
+    private String className;
 
     /**
      * 首字母小写的类名
@@ -45,40 +53,24 @@ public class TableMeta implements Serializable {
      */
     @Deprecated
     private String tableSchema;
+
+//    /**
+//     * 需要导时间包
+//     */
+//    private boolean needImportDateType = true;
+
     /**
-     * todo 导入时间
+     * 作者
      */
-    private boolean importDate = true;
-
-
-    private Date createTime = new Date();
-
-
     private String author;
-    private String tableAlias;
-    private String javaPackage;
-
-
-    @Deprecated
-    private String rootNamespace;
-
-    /**
-     * mapper名称
-     */
-    @Deprecated
-    private String mapperName;
 
     /**
      * 所有的全限定名称用此类封装
      */
-    private ProjectConfig classFullName;
+    private ProjectConfig projectConfig;
 
-    public TableMeta(String rootNamespace) {
-        this.classFullName = new ProjectConfig(rootNamespace);
-    }
 
     public TableMeta() {
-
     }
 
 
@@ -153,24 +145,6 @@ public class TableMeta implements Serializable {
         return NameUtil.lowerCaseFirstWord(getClassName());
     }
 
-    @Override
-    public String toString() {
-        return "TableMeta{" +
-                "tableName='" + tableName + '\'' +
-                ", tableComment='" + tableComment + '\'' +
-                ", lowerCaseFirstWordClassName='" + lowerCaseFirstWordClassName + '\'' +
-                ", columns=" + columns +
-                ", tableSchema='" + tableSchema + '\'' +
-                ", importDate=" + importDate +
-                ", createTime=" + createTime +
-                ", author='" + author + '\'' +
-                ", tableAlias='" + tableAlias + '\'' +
-                ", javaPackage='" + javaPackage + '\'' +
-                ", rootNamespace='" + rootNamespace + '\'' +
-                ", mapperName='" + mapperName + '\'' +
-                ", classFullName=" + classFullName +
-                '}';
-    }
 }
 
 

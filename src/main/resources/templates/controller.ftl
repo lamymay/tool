@@ -1,14 +1,15 @@
-package ${rootNamespace};
+package ${controllerPackageName};
 
+import ${className.modelNamespace};
 import lombok.extern.slf4j.Slf4j;
-import ${classFullName.modelNamespace};
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-<#if dateTypeExists>
-    import java.util.Date;
-</#if>
+import java.util.Date;
 
 /**
 * ${tableComment}接口
@@ -30,8 +31,8 @@ public class ${className}Controller {
     */
     @PostMapping("/save")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Long> save(@RequestBody ${className} ${lowerCaseFirstWordClassName}){
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.save(${lowerCaseFirstWordClassName}));
+    public ResponseEntity<Long> save(@RequestBody ${className} ${lowerCaseFirstWordClassName}){
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.save(${lowerCaseFirstWordClassName}));
     }
 
     /**
@@ -42,8 +43,8 @@ public class ${className}Controller {
     */
     @PostMapping("/delete")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Boolean> delete(Long id){
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.delete(id));
+    public ResponseEntity<Boolean> delete(Long id){
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.delete(id));
     }
 
     /**
@@ -54,8 +55,8 @@ public class ${className}Controller {
     */
     @PostMapping("/update")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Boolean> update(@RequestBody ${className} ${lowerCaseFirstWordClassName}) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.update(${lowerCaseFirstWordClassName}));
+    public ResponseEntity<Boolean> update(@RequestBody ${className} ${lowerCaseFirstWordClassName}) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.update(${lowerCaseFirstWordClassName}));
     }
 
     /**
@@ -66,8 +67,8 @@ public class ${className}Controller {
     */
     @PostMapping("/get")
     @ResponseBody
-     org.springframework.http.ResponseEntity<${className}> getById(Long id) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.getById(id));
+     public ResponseEntity<${className}> getById(Long id) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.getById(id));
     }
 
     /**
@@ -77,8 +78,8 @@ public class ${className}Controller {
     */
     @PostMapping("/list")
     @ResponseBody
-    org.springframework.http.ResponseEntity<List<${className}>> list(${className} query) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.list(query));
+    public ResponseEntity<List<${className}>> list(${className} query) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.list(query));
     }
 
     /**
@@ -89,8 +90,8 @@ public class ${className}Controller {
     */
     @PostMapping("/page")
     @ResponseBody
-    org.springframework.http.ResponseEntity<List<${className}>> listPage(@RequestBody ${className} query) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.listPage(query));
+    public ResponseEntity<List<${className}>> listPage(@RequestBody ${className} query) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.listPage(query));
     }
 
     // todo 处理是否可选输出批量接口?
@@ -102,8 +103,8 @@ public class ${className}Controller {
     */
     @PostMapping("/save-batch")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Integer> saveBatch(List<${className}> ${lowerCaseFirstWordClassName}s) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.saveBatch(${lowerCaseFirstWordClassName}s));
+    public ResponseEntity<Integer> saveBatch(List<${className}> ${lowerCaseFirstWordClassName}s) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.saveBatch(${lowerCaseFirstWordClassName}s));
     }
 
     /**
@@ -114,8 +115,8 @@ public class ${className}Controller {
     */
     @PostMapping("/delete-id-in")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Integer> deleteIdIn(List<Long> ids) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.deleteIdIn(ids));
+    public ResponseEntity<Integer> deleteIdIn(List<Long> ids) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.deleteIdIn(ids));
     }
 
     /**
@@ -126,8 +127,8 @@ public class ${className}Controller {
     */
     @PostMapping("/update-batch")
     @ResponseBody
-    org.springframework.http.ResponseEntity<Integer> updateBatch(List<${className}> ${lowerCaseFirstWordClassName}s) {
-        return org.springframework.http.ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.updateBatch(${lowerCaseFirstWordClassName}s));
+    public ResponseEntity<Integer> updateBatch(List<${className}> ${lowerCaseFirstWordClassName}s) {
+        return public ResponseEntity.ok(${lowerCaseFirstWordClassName}Service.updateBatch(${lowerCaseFirstWordClassName}s));
     }
 
 }

@@ -15,7 +15,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcPropertiesProvider;
+import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcMockPropertiesProvider;
 
 
 /**
@@ -56,7 +56,7 @@ public class LaunchGeneratorOverSpringContainerMain {
         log.info("Spring容器环境配置耗时{}ms", (t2 - t1));
 
         //  1、获取配置参数
-        ArcCodeGeneratorContext configContext = getArcPropertiesProvider();
+        ArcCodeGeneratorContext configContext = getArcMockPropertiesProvider();
 
         //  2、从Spring容器中获取生成工具bean   (干掉 mybatis 转而使用jdbc!)
         FreemarkerGeneratorService generatorService = context.getBean(FreemarkerGeneratorService.class);

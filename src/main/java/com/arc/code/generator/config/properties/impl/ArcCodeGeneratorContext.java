@@ -3,6 +3,7 @@ package com.arc.code.generator.config.properties.impl;
 import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.model.ProjectConfig;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import java.io.File;
  *
  * @author may
  * @since 2021/4/16 18:19
- */
+ */@Slf4j
 @Data
 public final class ArcCodeGeneratorContext {
 
@@ -23,6 +24,7 @@ public final class ArcCodeGeneratorContext {
 
     private String schemaName;//schemaName(数据库名)【必要】
     private String tableName;//表名
+
     private String removePrefix;//数据库表的前缀
 
     private String tableAlias;//数据库表在mapper的sql中的别名
@@ -54,9 +56,9 @@ public final class ArcCodeGeneratorContext {
 
 
     /**
-     * 要多行注释还单行注释
-     * multiline comment 多行注释
-     * End-of-line comment  行尾注释
+     * 要多行注释还单行注释 true=尾行注释,false=多行注释(默认)
+     * multiline comment 多行doc注释
+     * End-of-line comment 单行行尾注释
      */
     private boolean commentFormatAsEndOfLine = false;//End-of-line comment  行尾注释
 
@@ -79,7 +81,7 @@ public final class ArcCodeGeneratorContext {
         this.author = author;
     }
 
-    public static ArcCodeGeneratorContext getArcPropertiesProvider() {
+    public static ArcCodeGeneratorContext getArcMockPropertiesProvider() {
 
         // 参数配置
         com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext configContext = new com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext();
@@ -99,13 +101,14 @@ public final class ArcCodeGeneratorContext {
 
         configContext.setAuthor("叶超");
 
-        ProjectConfig classFullName = new ProjectConfig("com.arc.app");
-        configContext.setRootNamespace(classFullName.getRootNamespace());
-        classFullName.setProjectName("code");
+        ProjectConfig projectConfig = new ProjectConfig();
+        projectConfig.setBasePackage("com.arc.app");
+        projectConfig.setProjectName("code");
 
-        configContext.setProjectConfig(classFullName);
+        configContext.setProjectConfig(projectConfig);
+
+        //true=尾行注释,false=多行注释(默认)
         configContext.setCommentFormatAsEndOfLine(true);
-
         //        configContext.setMapperNamespace("com.demo.mapper");
         //        configContext.setServiceNamespace("com.demo.service");
         //        configContext.setServiceImplNamespace("com.demo.service.impl");
@@ -113,8 +116,7 @@ public final class ArcCodeGeneratorContext {
 
         configContext.setOutput("D:\\free");
 
-
-        System.out.println(JSON.toJSONString(configContext));
+        log.debug("默认配置是={},JSON.toJSONString(configContext));");
         return configContext;
 
     }
@@ -125,8 +127,8 @@ public final class ArcCodeGeneratorContext {
             projectConfig = new ProjectConfig();
         }
 
-        if (StringUtils.isBlank(projectConfig.getClassName())) {
-            projectConfig.setClassName(className);
+        if (StringUtils.isBlank(projectConfig.getModelName())) {
+            projectConfig.setModelName(className);
         }
     }
 

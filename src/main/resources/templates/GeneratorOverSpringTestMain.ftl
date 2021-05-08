@@ -1,4 +1,4 @@
-package ${rootNamespace};
+package ${basePackage};
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 * @author ${author?default("")}
 * @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
 */
-@MapperScan("${rootNamespace}.mapper")
+@MapperScan("${mapperPackage}")
 @RestController
 @SpringBootApplication
 public class GeneratorOverSpringTestMain {

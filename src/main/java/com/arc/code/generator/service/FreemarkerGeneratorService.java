@@ -3,6 +3,9 @@ package com.arc.code.generator.service;
 
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.OutTemplateConfig;
+import com.arc.code.generator.model.TemplateOutConfig;
+
+import java.util.List;
 
 /**
  * 创建代码的服务
@@ -20,7 +23,19 @@ public interface FreemarkerGeneratorService {
      */
     ArcCodeGeneratorContext processByContext(ArcCodeGeneratorContext propertiesProvider);
 
-    void process(OutTemplateConfig outTemplateConfig);
+    List<TemplateOutConfig> verifyAndPrepare(ArcCodeGeneratorContext arcContext);
+
+    @Deprecated
+    void process(TemplateOutConfig outTemplateConfig);
+
+    /**
+     * 合成模板, 异常则抛出异常
+     *
+     * @param templateFileName   模板文件名称(在指定位置哦)
+     * @param outputFileFullName (输出文件绝对路径)
+     * @param data               数据(类似map)
+     */
+    void process(String templateFileName, String outputFileFullName, Object data);
 }
 
 

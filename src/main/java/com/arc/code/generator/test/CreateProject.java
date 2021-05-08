@@ -1,4 +1,4 @@
-package com.arc.code.generator.test.file;
+package com.arc.code.generator.test;
 
 import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
@@ -7,7 +7,7 @@ import com.arc.code.generator.model.OutTemplateConfig;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.service.impl.FreemarkerGeneratorServiceImpl;
 import com.arc.code.generator.service.impl.MetaServiceImpl;
-import com.arc.code.generator.utils.ZipFileUtil;
+import com.arc.code.generator.test.file.Dependency;
 import freemarker.template.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.*;
 
-import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcPropertiesProvider;
+import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext.getArcMockPropertiesProvider;
 
 /**
  * 构造一个测试项目
@@ -61,7 +61,7 @@ public class CreateProject {
         log.info("Spring容器环境配置耗时{}ms", (t2 - t1));
 
         //  1、获取配置参数
-        ArcCodeGeneratorContext configContext = getArcPropertiesProvider();
+        ArcCodeGeneratorContext configContext = getArcMockPropertiesProvider();
 
         //  2、从Spring容器中获取生成工具bean   (干掉 mybatis 转而使用jdbc!)
         FreemarkerGeneratorService freemarkerGenerator = context.getBean(FreemarkerGeneratorService.class);
@@ -74,7 +74,7 @@ public class CreateProject {
         log.debug("合成模板,返回={}", JSON.toJSONString(produceResult));
         // 结果输出 文件输出zip
         String outPath = configContext.getOutput();
-        ZipFileUtil.outputFilesToZip(outPath);
+//        ZipFileUtil.outputFilesToZip(outPath);
 
 
         try {
@@ -165,7 +165,7 @@ public class CreateProject {
         list.add(new OutTemplateConfig("application-dev.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "config" + File.separator + "application-dev.yml"));
         // 启动类
         Map<String, Object> data = new HashMap<>();
-        data.put("rootNamespace", configContext.getProjectConfig().getRootNamespace());
+        data.put("basePackage", configContext.getProjectConfig().getBasePackage());
         data.put("createTime", new Date());
         list.add(new OutTemplateConfig("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", data));
 
