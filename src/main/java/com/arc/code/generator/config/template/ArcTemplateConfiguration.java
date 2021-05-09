@@ -1,6 +1,8 @@
 package com.arc.code.generator.config.template;
 
-import lombok.extern.slf4j.Slf4j;
+import com.arc.code.generator.controller.data.test.CmdTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +15,9 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
  * @author lamyamay
  * @since 2019/10/25 22:17
  */
-@Slf4j
 @Configuration
 public class ArcTemplateConfiguration {
+    private final static Logger log = LoggerFactory.getLogger(CmdTest.class);
 
     //结合使用注解@ConditionalOnMissingClass和@Bean,可以仅当某些类不存在于 classpath 上时候才创建某个Bean：
     //@ConditionalOnMissingClass(value={"com.sample.Dummy","com.sample.Dum"})

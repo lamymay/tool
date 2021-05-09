@@ -1,7 +1,6 @@
 package com.arc.code.generator.model;
 
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -10,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
  * @author may
  * @since 2021/4/30 14:26
  */
-@Data
 public class ProjectConfig {
 
     private String projectName = "default_test";
@@ -131,5 +129,99 @@ public class ProjectConfig {
     }
 
 
+    public String getProjectName() {
+        return projectName;
+    }
 
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public void setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+    }
+
+    public String getModelName() {
+        return modelName;
+    }
+
+    public void setModelName(String modelName) {
+        this.modelName = modelName;
+    }
+
+    public String getModelPackage() {
+        return modelPackage;
+    }
+
+    public void setModelPackage(String modelPackage) {
+        this.modelPackage = modelPackage;
+    }
+
+    public String getMapperName() {
+        return mapperName;
+    }
+
+    public void setMapperName(String mapperName) {
+        this.mapperName = mapperName;
+    }
+
+    public String getMapperPackage() {
+        return mapperPackage;
+    }
+
+    public void setMapperPackage(String mapperPackage) {
+        this.mapperPackage = mapperPackage;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getServicePackage() {
+        return servicePackage;
+    }
+
+    public void setServicePackage(String servicePackage) {
+        this.servicePackage = servicePackage;
+    }
+
+    public String getServiceImplName() {
+        return serviceImplName;
+    }
+
+    public void setServiceImplName(String serviceImplName) {
+        this.serviceImplName = serviceImplName;
+    }
+
+    public String getServiceImplPackage() {
+        return serviceImplPackage;
+    }
+
+    public void setServiceImplPackage(String serviceImplPackage) {
+        this.serviceImplPackage = serviceImplPackage;
+    }
+
+    public String getControllerName() {
+        return controllerName;
+    }
+
+    public void setControllerName(String controllerName) {
+        this.controllerName = controllerName;
+    }
+
+    public String getControllerPackage() {
+        return controllerPackage;
+    }
+
+    public void setControllerPackage(String controllerPackage) {
+        this.controllerPackage = controllerPackage;
+    }
 }

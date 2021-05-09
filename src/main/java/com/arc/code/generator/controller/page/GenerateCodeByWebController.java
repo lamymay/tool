@@ -1,6 +1,7 @@
 package com.arc.code.generator.controller.page;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -10,9 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @author May
  * @since 2020/1/16 12:55
  */
-@Slf4j
 @Controller
 public class GenerateCodeByWebController {
+    private final static Logger log = LoggerFactory.getLogger(GenerateCodeByWebController.class);
 
     @GetMapping({"/", "/test", "/code"})
     public String parameterCollectionPage() {

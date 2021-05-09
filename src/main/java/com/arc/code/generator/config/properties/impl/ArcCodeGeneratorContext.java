@@ -1,10 +1,9 @@
 package com.arc.code.generator.config.properties.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.model.ProjectConfig;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -13,9 +12,10 @@ import java.io.File;
  *
  * @author may
  * @since 2021/4/16 18:19
- */@Slf4j
-@Data
+ */
 public final class ArcCodeGeneratorContext {
+
+    private final static Logger log = LoggerFactory.getLogger(ArcCodeGeneratorContext.class);
 
     private String url; //数据库连接url
     private String user;  //数据库账号
@@ -42,7 +42,7 @@ public final class ArcCodeGeneratorContext {
     private String output = File.separator + "code_output_";// //T:\data\log\
 
     //输出配置
-    private String rootNamespace = "com.arc.zero";
+    private String basePackage = "com.arc.zero";
 
     /**
      * 代码生成方案
@@ -131,5 +131,142 @@ public final class ArcCodeGeneratorContext {
             projectConfig.setModelName(className);
         }
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public void setDriverClassName(String driverClassName) {
+        this.driverClassName = driverClassName;
+    }
+
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getRemovePrefix() {
+        return removePrefix;
+    }
+
+    public void setRemovePrefix(String removePrefix) {
+        this.removePrefix = removePrefix;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
+    }
+
+    public void setTableAlias(String tableAlias) {
+        this.tableAlias = tableAlias;
+    }
+
+    public ProjectConfig getProjectConfig() {
+        return projectConfig;
+    }
+
+    public void setProjectConfig(ProjectConfig projectConfig) {
+        this.projectConfig = projectConfig;
+    }
+
+    public String getOutput() {
+        return output;
+    }
+
+    public void setOutput(String output) {
+        this.output = output;
+    }
+
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public void setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+    }
+
+    public Integer getGenerateType() {
+        return generateType;
+    }
+
+    public void setGenerateType(Integer generateType) {
+        this.generateType = generateType;
+    }
+
+    public Integer getOutputType() {
+        return outputType;
+    }
+
+    public void setOutputType(Integer outputType) {
+        this.outputType = outputType;
+    }
+
+    public boolean isCommentFormatAsEndOfLine() {
+        return commentFormatAsEndOfLine;
+    }
+
+    public void setCommentFormatAsEndOfLine(boolean commentFormatAsEndOfLine) {
+        this.commentFormatAsEndOfLine = commentFormatAsEndOfLine;
+    }
+
+    public boolean isOnlyEnableEndOfLineCommentAndDisableMultilineComment() {
+        return onlyEnableEndOfLineCommentAndDisableMultilineComment;
+    }
+
+    public void setOnlyEnableEndOfLineCommentAndDisableMultilineComment(boolean onlyEnableEndOfLineCommentAndDisableMultilineComment) {
+        this.onlyEnableEndOfLineCommentAndDisableMultilineComment = onlyEnableEndOfLineCommentAndDisableMultilineComment;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public boolean isUseProjectDefaultDataSource() {
+        return useProjectDefaultDataSource;
+    }
+
+    public void setUseProjectDefaultDataSource(boolean useProjectDefaultDataSource) {
+        this.useProjectDefaultDataSource = useProjectDefaultDataSource;
+    }
+
 
 }

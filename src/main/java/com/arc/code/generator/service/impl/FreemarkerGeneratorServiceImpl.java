@@ -2,9 +2,8 @@ package com.arc.code.generator.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
-import com.arc.code.generator.model.ArcTemplateOutConfig;
-import com.arc.code.generator.model.ProjectConfig;
 import com.arc.code.generator.model.OutTemplateConfig;
+import com.arc.code.generator.model.ProjectConfig;
 import com.arc.code.generator.model.TemplateOutConfig;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
@@ -15,7 +14,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.geometry.spherical.oned.Arc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -164,7 +162,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
         final String output = configContext.getOutput();
         final String className = tableMeta.getClassName(configContext.getRemovePrefix());
-        String rootNamespace = configContext.getProjectConfig().getRootNamespace();
+        String rootNamespace = configContext.getProjectConfig().getBasePackage();
 
         // 设置模型的名称
         configContext.setClassNameIfNotConfig(className);
@@ -187,14 +185,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             tableMeta.setTableAlias(configContext.getTableAlias());
             tableMeta.setAuthor(author);
 
-            // 设置根路径
-            tableMeta.setRootNamespace(configContext.getRootNamespace());
-            ProjectConfig classFullName = new ProjectConfig(configContext);
 
-            tableMeta.setClassFullName(classFullName);
-
-            // mapper 名称
-            tableMeta.setProjectConfig(getMapperNamespace(configContext, className));
+            tableMeta.setProjectConfig(new ProjectConfig(configContext));
 
             // 获取模板
             outTemplateConfig.setTemplateFileName(suffixAndTemplateName.getKey());
@@ -211,13 +203,14 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         return configList;
     }
 
+    @Deprecated
     private String getMapperNamespace(ArcCodeGeneratorContext configContext, String className) {
         if (configContext != null && configContext.getProjectConfig() != null
-                && StringUtils.isNotBlank(configContext.getProjectConfig().getMapperNamespace())) {
-            return configContext.getProjectConfig().getMapperNamespace().trim();
+                && StringUtils.isNotBlank(configContext.getProjectConfig().getMapperPackage())) {
+            return configContext.getProjectConfig().getMapperPackage().trim();
         }
-        if (configContext != null && !StringUtils.isEmpty(configContext.getRootNamespace())) {
-            return configContext.getRootNamespace() + className;
+        if (configContext != null && !StringUtils.isEmpty(configContext.getBasePackage())) {
+            return configContext.getBasePackage() + className;
         }
         throw new RuntimeException("参数配置错误,mapper接口名称没有指定");
     }
@@ -233,8 +226,8 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
 
 
         final String output = configContext.getOutput();
-        final String className = configContext.getProjectConfig().getClassName();
-        String rootNamespace = configContext.getProjectConfig().getRootNamespace();
+        final String className = configContext.getProjectConfig().getModelName();
+        String rootNamespace = configContext.getProjectConfig().getBasePackage();
 
         Integer generateType = configContext.getGenerateType();
 
@@ -251,7 +244,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         ProjectConfig projectConfig = configContext.getProjectConfig();
 
         //D:\free\test\src\main\java\
-        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", configContext.getProjectConfig().getRootNamespace());
+        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", configContext.getProjectConfig().getBasePackage());
         log.debug("输出文件的前缀是={}", pathPrefix);
 
 

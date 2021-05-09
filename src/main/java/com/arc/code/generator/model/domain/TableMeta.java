@@ -2,7 +2,6 @@ package com.arc.code.generator.model.domain;
 
 import com.arc.code.generator.model.ProjectConfig;
 import com.arc.code.generator.utils.NameUtil;
-import lombok.Data;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
@@ -15,7 +14,6 @@ import java.util.List;
  * @author 叶超
  * @since 2019/10/3 14:45
  */
-@Data
 public class TableMeta implements Serializable {
 
     private static final long serialVersionUID = -1L;
@@ -145,6 +143,81 @@ public class TableMeta implements Serializable {
         return NameUtil.lowerCaseFirstWord(getClassName());
     }
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getTableAlias() {
+        return tableAlias;
+    }
+
+    public void setTableAlias(String tableAlias) {
+        this.tableAlias = tableAlias;
+    }
+
+    public String getTableComment() {
+        return tableComment;
+    }
+
+    public void setTableComment(String tableComment) {
+        this.tableComment = tableComment;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public void setLowerCaseFirstWordClassName(String lowerCaseFirstWordClassName) {
+        this.lowerCaseFirstWordClassName = lowerCaseFirstWordClassName;
+    }
+
+    public List<ColumnMeta> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<ColumnMeta> columns) {
+        this.columns = columns;
+    }
+
+    public String getTableSchema() {
+        return tableSchema;
+    }
+
+    public void setTableSchema(String tableSchema) {
+        this.tableSchema = tableSchema;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public ProjectConfig getProjectConfig() {
+        return projectConfig;
+    }
+
+    public void setProjectConfig(ProjectConfig projectConfig) {
+        this.projectConfig = projectConfig;
+    }
 }
 
 

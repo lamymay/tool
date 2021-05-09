@@ -1,7 +1,8 @@
 package com.arc.code.generator.controller.data;
 
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,11 @@ import java.util.Map;
  * @since 2019/10/3 15:29
  */
 @Api(tags = "测试读取配置文件")
-@Slf4j
 @RestController
 @RequestMapping("/test/process")
 public class ProcessMapTestController {
 
+    private final Logger log = LoggerFactory.getLogger(ProcessMapTestController.class);
 
     /**
      * 测试controller接收map数据

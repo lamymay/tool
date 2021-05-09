@@ -167,7 +167,7 @@ public class CreateProject {
         Map<String, Object> data = new HashMap<>();
         data.put("basePackage", configContext.getProjectConfig().getBasePackage());
         data.put("createTime", new Date());
-        list.add(new OutTemplateConfig("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getRootNamespace()) + File.separator + "GeneratorOverSpringTestMain.java", data));
+        list.add(new OutTemplateConfig("GeneratorOverSpringTestMain.ftl", output + File.separator + "src" + File.separator + "main" + File.separator + "java" + getFilePathByRootNamespace(configContext.getBasePackage()) + File.separator + "GeneratorOverSpringTestMain.java", data));
 
         return list;
     }
@@ -215,7 +215,7 @@ public class CreateProject {
         createParentDir(output + File.separator + "src" + File.separator + "test" + File.separator + "resources");
 
         // todo
-        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + getFilePathByRootNamespace(configContext.getRootNamespace()));
+        createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator + getFilePathByRootNamespace(configContext.getBasePackage()));
 
         createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "mapper");
         createParentDir(output + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "static");

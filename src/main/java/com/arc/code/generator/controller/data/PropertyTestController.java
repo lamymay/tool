@@ -22,11 +22,10 @@
 // * @since 2019/10/3 15:29
 // */
 //@Api(tags = "测试读取配置文件")
-//@Slf4j
 //@RestController
 //@RequestMapping("/test")
 //public class PropertyTestController {
-//
+//     private  final Logger logger = LoggerFactory.getLogger(PropertyTestController.class);
 //
 //    /**
 //     * 配置属性是否可以正常注入 1

@@ -1,6 +1,7 @@
 package com.arc.code.generator.controller.data.test;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +13,9 @@ import static com.arc.code.generator.controller.data.GenerateCodeV1Controller.op
  * @author may
  * @since 2021/4/27 14:24
  */
-@Slf4j
 public class CmdTest {
 
+    private final static Logger log = LoggerFactory.getLogger(CmdTest.class);
 
     public static void main(String[] args) throws IOException {
         com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext arcCodeGeneratorContext = new com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext();

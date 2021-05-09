@@ -1,7 +1,5 @@
 package com.arc.code.generator.config.swagger2;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,8 +52,6 @@ public class Swagger2ApiConfiguration  {
      * 对于yml配置文件的的属性做映射
      * 目的为了配置swagger2
      */
-    @Getter
-    @Setter
     @Component
     @ConfigurationProperties(prefix = "msf.swagger2")
     public static class Swagger2Properties {
@@ -76,6 +72,76 @@ public class Swagger2ApiConfiguration  {
 
         private String contactEmail="2320158601@qq.com";
 
+        public String getBasePackage() {
+            return basePackage;
+        }
+
+        public void setBasePackage(String basePackage) {
+            this.basePackage = basePackage;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public String getTermsOfServiceUrl() {
+            return termsOfServiceUrl;
+        }
+
+        public void setTermsOfServiceUrl(String termsOfServiceUrl) {
+            this.termsOfServiceUrl = termsOfServiceUrl;
+        }
+
+        public String getContactName() {
+            return contactName;
+        }
+
+        public void setContactName(String contactName) {
+            this.contactName = contactName;
+        }
+
+        public String getContactUrl() {
+            return contactUrl;
+        }
+
+        public void setContactUrl(String contactUrl) {
+            this.contactUrl = contactUrl;
+        }
+
+        public String getContactEmail() {
+            return contactEmail;
+        }
+
+        public void setContactEmail(String contactEmail) {
+            this.contactEmail = contactEmail;
+        }
     }
 
+    public Swagger2Properties getProp() {
+        return prop;
+    }
+
+    public void setProp(Swagger2Properties prop) {
+        this.prop = prop;
+    }
 }

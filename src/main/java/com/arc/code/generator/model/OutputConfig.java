@@ -6,5 +6,6 @@ package com.arc.code.generator.model;
  * @author may
  * @since 2021/5/7 13:30
  */
+@Deprecated
 public class OutputConfig {
 }

@@ -1,7 +1,6 @@
 package com.arc.code.generator.model;
 
 import com.arc.code.generator.model.domain.TableMeta;
-import lombok.Data;
 
 /**
  * data template outFile
@@ -9,7 +8,6 @@ import lombok.Data;
  * @author may
  * @since 2021/4/23 19:42
  */
-@Data
 @Deprecated
 public class OutTemplateConfig implements TemplateOutConfig {
 
@@ -40,6 +38,49 @@ public class OutTemplateConfig implements TemplateOutConfig {
 
     public OutTemplateConfig() {
 
+    }
+
+    public TableMeta getMeta() {
+        return meta;
+    }
+
+    public void setMeta(TableMeta meta) {
+        this.meta = meta;
+    }
+
+    @Override
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    @Override
+    public String getTemplateFileName() {
+        return templateFileName;
+    }
+
+    public void setTemplateFileName(String templateFileName) {
+        this.templateFileName = templateFileName;
+    }
+
+    @Override
+    public String getOutputFileFullName() {
+        return outputFileFullName;
+    }
+
+    public void setOutputFileFullName(String outputFileFullName) {
+        this.outputFileFullName = outputFileFullName;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 }
 

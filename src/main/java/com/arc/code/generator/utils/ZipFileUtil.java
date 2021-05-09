@@ -1,6 +1,8 @@
 package com.arc.code.generator.utils;
 
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
@@ -17,9 +19,9 @@ import java.util.zip.ZipOutputStream;
  * @author may
  * @since 2020/1/10 22:21
  */
-@Slf4j
 public class ZipFileUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(ZipFileUtil.class);
 
     /**
      * 返回指定目录下的全部文件

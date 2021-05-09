@@ -1,6 +1,5 @@
 package com.arc.code.generator.model;
 
-import lombok.Data;
 
 /**
  * data template outFile
@@ -8,7 +7,6 @@ import lombok.Data;
  * @author may
  * @since 2021/4/23 19:42
  */
-@Data
 public class ArcTemplateOutConfig implements TemplateOutConfig {
 
     /**
@@ -36,18 +34,39 @@ public class ArcTemplateOutConfig implements TemplateOutConfig {
     public ArcTemplateOutConfig() {
 
     }
-}
 
-/*
-    private Map<String, Object> data;
-
-    {
-        Map<Object, Object> parameterMap = new HashMap<>();
-        parameterMap.put("meta", tableMeta);
-        parameterMap.put("className", tableMeta.getClassName());
-        parameterMap.put("lowerCaseFirstWordClassName", tableMeta.getLowerCaseFirstWordClassName());
-        parameterMap.put(TableMeta.class.getName(), tableMeta);
+    @Override
+    public Object getData() {
+        return data;
     }
 
- */
+    public void setData(Object data) {
+        this.data = data;
+    }
 
+    @Override
+    public String getTemplateFileName() {
+        return templateFileName;
+    }
+
+    public void setTemplateFileName(String templateFileName) {
+        this.templateFileName = templateFileName;
+    }
+
+    @Override
+    public String getOutputFileFullName() {
+        return outputFileFullName;
+    }
+
+    public void setOutputFileFullName(String outputFileFullName) {
+        this.outputFileFullName = outputFileFullName;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+}

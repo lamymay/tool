@@ -5,7 +5,8 @@ import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.service.FreemarkerGeneratorService;
 import com.arc.code.generator.utils.ZipFileUtil;
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,13 +27,22 @@ import java.util.Map;
  * @since 2019/10/20 21:19
  */
 @Api(tags = "代码生成的API")
-@Slf4j
 @RestController
 @RequestMapping("/v1/process")
 public class GenerateCodeV1Controller {
 
+    private final static Logger log = LoggerFactory.getLogger(GenerateCodeV1Controller.class);
+
     @Autowired
     private FreemarkerGeneratorService freemarkerGeneratorService;
+
+    public static void openOutputDir(String outPath) {
+        try {
+            Desktop.getDesktop().open(new File(outPath));
+        } catch (IOException exception) {
+            log.error("error", exception);
+        }
+    }
 
     /**
      * success
@@ -67,7 +77,6 @@ public class GenerateCodeV1Controller {
         ZipFileUtil.downloadFilesZip(response, output);
     }
 
-
     /**
      * 测试生成逻辑
      *
@@ -87,16 +96,6 @@ public class GenerateCodeV1Controller {
             return responseEntity;
         }
         return ResponseEntity.ok("success");
-    }
-
-
-    public static void openOutputDir(String outPath) {
-        try {
-            Desktop.getDesktop().open(new File(outPath));
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            log.error("error", exception);
-        }
     }
 
 }

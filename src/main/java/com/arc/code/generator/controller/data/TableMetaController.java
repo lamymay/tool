@@ -4,7 +4,8 @@ import com.arc.code.generator.config.properties.impl.ArcCodeGeneratorContext;
 import com.arc.code.generator.model.domain.TableMeta;
 import com.arc.code.generator.service.MetaService;
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +19,11 @@ import javax.annotation.Resource;
  * @since 2021/4/27 14:26
  */
 @Api(tags = "代码生成的API")
-@Slf4j
 @RestController
 @RequestMapping("/test/meta")
 public class TableMetaController {
+
+    private final Logger log = LoggerFactory.getLogger(TableMetaController.class);
 
     /**
      * 测试基础数据是否正常获取
@@ -29,8 +31,8 @@ public class TableMetaController {
     @Resource
     private MetaService metaService;
 
-    //================== 测试  ==================
 
+    //================== 测试  ==================
 
     //测试jdbc访问数据库
     @GetMapping(value = "/jdbc")

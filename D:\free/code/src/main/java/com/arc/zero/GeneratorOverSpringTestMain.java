@@ -1,4 +1,4 @@
-package ${basePackage};
+package com.arc.app;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 * 运行main方法启动web server，通过controller传入参数来生成代码，需要启动web容器
 * 部署：默认情况下：项目将打包为jar，使用内置tomcat启动，外部条件需要mysql8.0
 *
-* @author ${author?default("")}
-* @since ${(createTime?string("yyyy-MM-dd HH:mm:ss"))!}
+* @author 
+* @since 2021-05-09 11:00:05
 */
-<#--@MapperScan("${mapperPackage}")-->
 @RestController
 @SpringBootApplication
 public class GeneratorOverSpringTestMain {

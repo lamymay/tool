@@ -1,6 +1,7 @@
 package com.arc.code.generator;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -12,10 +13,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author lamymay/lamy/may/x/XL/叶超
  * @since 2019/10/3 8:01
  */
-@Slf4j
 @SpringBootApplication
 //@EnableSwagger2ForArcApi
 public class LaunchGeneratorOverWebServerMain {
+
+    private static final Logger log = LoggerFactory.getLogger(LaunchGeneratorOverWebServerMain.class);
 
     public static void main(String[] args) {
         SpringApplication.run(LaunchGeneratorOverWebServerMain.class, args);
