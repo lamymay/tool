@@ -44,11 +44,13 @@ public class OutTemplateConfig implements TemplateOutConfig {
         return meta;
     }
 
+    @Deprecated
     public void setMeta(TableMeta meta) {
         this.meta = meta;
     }
 
     @Override
+    @Deprecated
     public Object getData() {
         return data;
     }

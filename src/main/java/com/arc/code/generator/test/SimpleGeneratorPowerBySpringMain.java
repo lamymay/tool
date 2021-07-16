@@ -19,6 +19,8 @@ import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorCont
 
 
 /**
+ * todo 简单方法 数据 + 模版 = 文件
+ *
  * 启动类--非web Server方式『方案一』
  * Attention:   Do not launch the web container.
  * 注意：          运行main方法来生成代码，而不启动web容器
@@ -27,9 +29,9 @@ import static com.arc.code.generator.config.properties.impl.ArcCodeGeneratorCont
  * @author lamymay/lamy/may/x/XL/叶超
  * @since 2019/10/3 8:01
  */
-public class LaunchGeneratorOverSpringContainerMain {
+public class SimpleGeneratorPowerBySpringMain {
 
-    private static final Logger log = LoggerFactory.getLogger(LaunchGeneratorOverSpringContainerMain.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpleGeneratorPowerBySpringMain.class);
 
     //@SuppressWarnings("resource")
     public static void main(String[] args) {

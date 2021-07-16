@@ -68,7 +68,6 @@ public class FileUtil {
         //System.out.println(getTimeString());
 
 
-
         // "/data/test"
         // "C:\\data\\"
         // "C:\\data"
@@ -172,14 +171,13 @@ public class FileUtil {
     }
 
 
-
     private static String builtPath(String str) {
         if (str == null || "".equals(str.trim())) {
             throw new RuntimeException("非法路徑");
         }
 
         // 如果是win系统
-        if (true) {
+        if (SystemOSUtil.isWindow()) {
             // 把包名称处理下
             if (str.contains(".")) {
 
@@ -202,10 +200,23 @@ public class FileUtil {
             return str;
 
         } else {
+            // 把包名称处理下
+            if (str.contains(".")) {
 
+                str = str.replace(".", File.separator);
+
+
+//                String[] split = str.split("\\.");
+//                for (String item : split) {
+//                    str= builtPath(item);
+//                    System.out.println(str);
+//                }
+            }
+
+            if (!str.endsWith(File.separator)) str = str + File.separator;
         }
+        return str;
 
-        throw new RuntimeException("异常");
     }
 
     public static String getTimeString() {

@@ -104,6 +104,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         List<TemplateOutConfig> outTemplateConfigList = verifyAndPrepare(arcContext);
         //2、模板数据合成输出到文件
         for (TemplateOutConfig outTemplateConfig : outTemplateConfigList) {
+//            if(outTemplateConfig.().contains("")) ///Users/may/Desktop/output/code/src/main/java/com/arc/app/CommunityUnits.java
             process(outTemplateConfig);
         }
         arcContext.setSuccess(true);
@@ -125,7 +126,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         Assert.notNull(arcContext, "数据表的元数据获取失败");
 
         // 全局设置 输出文件路径处理
-        String output = arcContext.getOutput() != null ? arcContext.getOutput() : defaultOutputPath;
+        String output = arcContext.getOutput() == null ?defaultOutputPath: arcContext.getOutput() ;
         if (!output.endsWith(File.separator)) {
             output = output + File.separator;
             arcContext.setOutput(output);
@@ -193,6 +194,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
             outTemplateConfig.setOutputFileFullName(suffixAndTemplateName.getValue());
 
             outTemplateConfig.setMeta(tableMeta);
+            outTemplateConfig.setData(tableMeta);
 
             configList.add(outTemplateConfig);
         }
@@ -244,7 +246,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         ProjectConfig projectConfig = configContext.getProjectConfig();
 
         //D:\free\test\src\main\java\
-        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src\\main\\java", configContext.getProjectConfig().getBasePackage());
+        String pathPrefix = concatPath(output, projectConfig.getProjectName(), "src"+File.separator+"main"+File.separator+"java", configContext.getProjectConfig().getBasePackage());
         log.debug("输出文件的前缀是={}", pathPrefix);
 
 
@@ -253,7 +255,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         switch (generateType) {
             // only model
             case 0:
-                javaSuffixAndTemplateName.put("model.ftl", pathPrefix + ".java");
+                javaSuffixAndTemplateName.put("model.ftl", pathPrefix +className+ ".java");
                 break;
             // only xml
             case 1:
@@ -323,6 +325,7 @@ public class FreemarkerGeneratorServiceImpl implements InitializingBean, Freemar
         try {
             writer = new FileWriter(FileUtil.createOutFile(outputFileFullName));
             Template template = configuration.getTemplate(templateFileName);
+            log.info("模版合成用data={}",JSON.toJSONString(data));
             template.process(data, writer);
             //        log.debug("模板输出后返回processingEnvironment={}", processingEnvironment);
             writer.flush();

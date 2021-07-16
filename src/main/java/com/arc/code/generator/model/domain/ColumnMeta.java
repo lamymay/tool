@@ -18,6 +18,9 @@ public class ColumnMeta implements Serializable {
 
     private String tableSchema;
 
+    /**
+     * db原始表字段名称，就是带下划线带那种
+     */
     private String columnName;
 
 

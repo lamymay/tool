@@ -13,6 +13,7 @@ public interface TemplateOutConfig {
 
     String getOutputFileFullName();
 
+    @Deprecated
     Object getData();
 
 }

@@ -91,12 +91,13 @@ public final class ArcCodeGeneratorContext {
         configContext.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         //数据库名 建议指定若不指定使用默认数据JDBC url中的数据库
-        configContext.setGenerateType(91);
+        configContext.setGenerateType(0);
+        //configContext.setGenerateType(91);
         configContext.setOutputType(1);
 
-        configContext.setSchemaName("bu_oms");
-        configContext.setTableName("oms_inquiry_order");
-        configContext.setRemovePrefix("oms_");
+        configContext.setSchemaName("zero");
+        configContext.setTableName("community_house");
+        configContext.setRemovePrefix(null);
 //        configContext.setTableAlias("click");
 
         configContext.setAuthor("叶超");
@@ -114,7 +115,11 @@ public final class ArcCodeGeneratorContext {
         //        configContext.setServiceImplNamespace("com.demo.service.impl");
         //        configContext.setControllerNamespace("com.demo.service.impl");
 
-        configContext.setOutput("D:\\free");
+        // WIN10
+        //configContext.setOutput("D:\\free");
+
+        // MAC
+        configContext.setOutput("/Users/may/Desktop/output");
 
         log.debug("默认配置是={},JSON.toJSONString(configContext));");
         return configContext;

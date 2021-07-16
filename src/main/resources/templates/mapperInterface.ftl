@@ -1,6 +1,6 @@
 package ${rootNamespace}.mapper;
 
-import ${rootNamespace}.${className};
+import ${rootNamespace}.${className};c
 import com.arc.test.model.request.${className};
 import java.util.List;
 
